@@ -1,0 +1,298 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+@import "./theme.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * iInvest design tokens — light theme only for V1.
+ * All component color MUST come from these tokens (never hardcode).
+ * See docs/design.md for role definitions.
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 8px);
+  --radius-md: calc(var(--radius) - 4px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 16px);
+  --radius-4xl: calc(var(--radius) + 24px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+  --color-practice: var(--practice);
+  --color-practice-foreground: var(--practice-foreground);
+  --color-success: var(--primary);
+  --color-success-foreground: var(--primary-foreground);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  /* Shape */
+  --radius: 1rem;
+
+  /* Palette
+   * #0077B3  deep blue    — primary
+   * #A3D1E0  mid blue     — accent / borders
+   * #E0F7FA  pale cyan    — muted surface
+   * #F0F8FF  alice blue   — app background
+   * #FFFFFF  white        — cards / popovers
+   */
+
+  /* Surfaces */
+  --background: #F0F8FF;
+  --foreground: #0B2A3A;                         /* deep navy for contrast on light blues */
+  --card: #FFFFFF;
+  --card-foreground: var(--foreground);
+  --popover: #FFFFFF;
+  --popover-foreground: var(--foreground);
+
+  /* Brand — deep blue */
+  --primary: #0077B3;
+  --primary-foreground: #FFFFFF;
+
+  /* Secondary — pale cyan surface */
+  --secondary: #E0F7FA;
+  --secondary-foreground: var(--foreground);
+
+  /* Muted (locked, disabled) */
+  --muted: #E0F7FA;
+  --muted-foreground: #4A6B7A;
+
+  /* Accent — mid blue (streak / highlight chip) */
+  --accent: #A3D1E0;
+  --accent-foreground: #0B2A3A;
+
+  /* Destructive — red-orange, not pure red (kept for semantic clarity) */
+  --destructive: oklch(0.63 0.2 30);
+  --destructive-foreground: #FFFFFF;
+
+  /* Practice money — deeper navy-blue variant of the palette, still clearly
+     distinct from --primary so it can never be mistaken for real currency. */
+  --practice: #0B2A3A;
+  --practice-foreground: #E0F7FA;
+
+  /* Lines / rings */
+  --border: #A3D1E0;
+  --input: #A3D1E0;
+  --ring: #0077B3;
+
+  /* Charts */
+  --chart-1: #0077B3;
+  --chart-2: #A3D1E0;
+  --chart-3: #0B2A3A;
+  --chart-4: #E0F7FA;
+  --chart-5: oklch(0.63 0.2 30);
+
+  /* Sidebar (unused in V1 but kept for shadcn primitives) */
+  --sidebar: var(--background);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: var(--accent);
+  --sidebar-accent-foreground: var(--accent-foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
+}
+
+/* Dark mode — toggled by adding `.dark` on <html> (see Profile's toggle).
+   Same structure as :root above; only the color values change. Sidebar
+   tokens are omitted deliberately — they're defined in :root as var(...)
+   references and resolve against whichever block wins the cascade. */
+.dark {
+  --background: #0b1620;
+  --foreground: #e8f1f7;
+  --card: #122230;
+  --card-foreground: var(--foreground);
+  --popover: #122230;
+  --popover-foreground: var(--foreground);
+
+  --primary: #4fb3e8;
+  --primary-foreground: #072330;
+
+  --secondary: #16303c;
+  --secondary-foreground: var(--foreground);
+
+  --muted: #16303c;
+  --muted-foreground: #8fb0be;
+
+  --accent: #2e6e85;
+  --accent-foreground: var(--foreground);
+
+  --destructive: oklch(0.7 0.19 30);
+  --destructive-foreground: #1a0500;
+
+  /* Practice money — teal instead of light mode's deep navy, since navy
+     would now blend into the dark background. Still clearly distinct
+     from --primary so it can never read as real currency. */
+  --practice: #34c7a0;
+  --practice-foreground: #052b22;
+
+  --border: #22384a;
+  --input: #22384a;
+  --ring: #4fb3e8;
+
+  --chart-1: #4fb3e8;
+  --chart-2: #2e6e85;
+  --chart-3: #e8f1f7;
+  --chart-4: #16303c;
+  --chart-5: oklch(0.7 0.19 30);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+      "Helvetica Neue", Arial, sans-serif;
+  }
+
+  /* Tabular numerics for money/XP/prices */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* Level-up celebration (see docs/design.md §7): 400ms scale-in badge +
+   a single, non-looping confetti burst. Components also skip rendering the
+   confetti nodes entirely under prefers-reduced-motion. */
+@keyframes level-up-scale {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-level-up-scale {
+  animation: level-up-scale 400ms ease-out both;
+}
+
+@keyframes confetti-burst {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--confetti-x), var(--confetti-y)) rotate(var(--confetti-rotate));
+    opacity: 0;
+  }
+}
+
+.animate-confetti-burst {
+  animation: confetti-burst 550ms ease-out both;
+}
+
+/* Lesson-path completion pop: the just-finished lesson's node bounces
+   before the view pages forward to the next lesson. */
+@keyframes node-pop {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-node-pop {
+  animation: node-pop 500ms ease-out both;
+}
+
+/* Completion-screen hero checkmark — plays on every lesson, not just level-ups. */
+@keyframes check-pulse {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-check-pulse {
+  animation: check-pulse 450ms ease-out both;
+}
+
+/* Lesson path "Start" badge — bounces above the current node. Combines its
+   own centering translateX with the vertical bounce since this animation
+   overwrites `transform` on every frame. */
+@keyframes badge-bounce {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-5px);
+  }
+}
+
+/* MarketTicker: the item list is rendered twice back-to-back, so a -50%
+   translate loops seamlessly with no visible seam or reset jump. */
+@keyframes ticker-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}

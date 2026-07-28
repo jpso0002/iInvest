@@ -1,0 +1,143 @@
+:root {
+  /* Indigo — marque, actions principales */
+  --color-indigo: #5B4FE8;
+  --color-indigo-dark: #3E33B8;
+  --color-indigo-light: #E8E6FB;
+  --color-indigo-tint: #EEEDFE;
+
+  /* Corail — accent, gamification, badges */
+  --color-coral: #FF7A3D;
+  --color-coral-light: #FFE4D2;
+  --color-coral-text: #993C1D;
+
+  /* Teal — gains, succès */
+  --color-teal: #0F6E56;
+  --color-teal-light: #E1F5EE;
+  --color-teal-light-alt: #D7F5F0;
+
+  /* Rose — pertes, alertes */
+  --color-rose: #A32D2D;
+  --color-rose-light: #FCE2E2;
+
+  /* Neutres */
+  --color-text: #1A1B25;
+  --color-text-secondary: #6B6C7E;
+  --color-text-disabled: #B4B2A9;
+  --color-gray-bg: #F4F4F8;
+  --color-gray-bg-alt: #EDEDF0;
+  --color-white: #FFFFFF;
+  --color-border: #E4E1F5;
+  --color-cream: #FDFBF9;
+
+  /* Radius */
+  --radius-sm: 14px;
+  --radius-md: 18px;
+  --radius-lg: 24px;
+  --radius-pill: 999px;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 24px;
+  --space-2xl: 32px;
+
+  /* Typography */
+  --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+  --font-size-xs: 11px;
+  --font-size-sm: 12px;
+  --font-size-base: 13px;
+  --font-size-md: 15px;
+  --font-size-lg: 18px;
+  --font-size-money: 22px;
+  --font-size-money-lg: 26px;
+
+  --shadow-soft: 0 1px 2px rgba(26, 27, 37, 0.06), 0 2px 8px rgba(26, 27, 37, 0.04);
+
+  --phone-width: 390px;
+  --tabbar-height: 64px;
+  --statusbar-height: 44px;
+}
+
+/* Dark mode — toggled by adding the `.dark` class on <html>. Only the colour
+   tokens are remapped; every screen that uses these variables adapts. Accent
+   hues are brightened a touch so they stay legible on dark surfaces, and the
+   light "tint" backgrounds become dark tinted surfaces. */
+.dark {
+  --color-indigo: #7C70F2;
+  --color-indigo-dark: #6155E9;
+  --color-indigo-light: #2E2A54;
+  --color-indigo-tint: #24213F;
+
+  --color-coral: #FF8A52;
+  --color-coral-light: #3A2417;
+  --color-coral-text: #FFB489;
+
+  --color-teal: #33BE9E;
+  --color-teal-light: #123029;
+  --color-teal-light-alt: #143329;
+
+  --color-rose: #EA6A6A;
+  --color-rose-light: #3A1D1D;
+
+  --color-text: #ECEDF4;
+  --color-text-secondary: #A2A4B4;
+  --color-text-disabled: #6C6E7C;
+  --color-gray-bg: #262731;
+  --color-gray-bg-alt: #14151C;
+  --color-white: #22232E;
+  --color-border: #34353F;
+  --color-cream: #16171F;
+
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--color-gray-bg-alt);
+  font-family: var(--font-family);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Accessibility: visible keyboard focus ring. :focus-visible shows only for
+   keyboard / assistive-tech users, not on mouse clicks. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[role="button"]:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--color-indigo);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Respect users who prefer reduced motion: neutralise the decorative
+   animations (splash, ticker scroll, screen transitions, confetti…). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

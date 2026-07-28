@@ -1,0 +1,83 @@
+.mascot {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  margin: 12px 0 16px;
+}
+
+.mascot__avatar {
+  width: 72px;
+  height: 96px;
+  object-fit: contain;
+  object-position: bottom center;
+  flex-shrink: 0;
+  filter: drop-shadow(0 4px 8px rgba(15, 23, 42, 0.12));
+}
+
+.mascot__bubble {
+  position: relative;
+  background: var(--color-white, #fff);
+  border: 1.5px solid var(--color-border, #e5e7eb);
+  border-radius: 16px;
+  padding: 10px 14px;
+  flex: 1;
+  box-shadow: 0 2px 0 rgba(15, 23, 42, 0.04);
+}
+
+.mascot__bubble::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  bottom: 16px;
+  width: 14px;
+  height: 14px;
+  background: var(--color-white, #fff);
+  border-left: 1.5px solid var(--color-border, #e5e7eb);
+  border-bottom: 1.5px solid var(--color-border, #e5e7eb);
+  transform: rotate(45deg);
+}
+
+.mascot__bubble-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+
+.mascot__name {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-indigo, #4f46e5);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.mascot__close {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--color-text-muted, #64748b);
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+.mascot__close:hover {
+  color: var(--color-text, #0f172a);
+}
+
+.mascot__tip {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--color-text, #0f172a);
+}
+
+.mascot--floating {
+  position: fixed;
+  bottom: 90px;
+  left: 16px;
+  right: 16px;
+  z-index: 20;
+}
