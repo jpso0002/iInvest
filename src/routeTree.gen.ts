@@ -16,11 +16,12 @@ import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AppLeagueRouteImport } from './routes/_app.league'
 import { Route as AppProfileRouteImport } from './routes/_app.profile'
-import { Route as AppSimulateRouteImport } from './routes/_app.simulate'
 import { Route as AppLessonsIndexRouteImport } from './routes/_app.lessons.index'
 import { Route as AppLessonsLessonIdRouteImport } from './routes/_app.lessons.$lessonId'
 import { Route as AppNewsIndexRouteImport } from './routes/_app.news.index'
 import { Route as AppNewsArticleIdRouteImport } from './routes/_app.news.$articleId'
+import { Route as AppSimulateIndexRouteImport } from './routes/_app.simulate.index'
+import { Route as AppSimulateAssetIdRouteImport } from './routes/_app.simulate.$assetId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -56,11 +57,6 @@ const AppProfileRoute = AppProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AppRoute,
 } as any)
-const AppSimulateRoute = AppSimulateRouteImport.update({
-  id: '/simulate',
-  path: '/simulate',
-  getParentRoute: () => AppRoute,
-} as any)
 const AppLessonsIndexRoute = AppLessonsIndexRouteImport.update({
   id: '/lessons/',
   path: '/lessons/',
@@ -81,6 +77,16 @@ const AppNewsArticleIdRoute = AppNewsArticleIdRouteImport.update({
   path: '/news/$articleId',
   getParentRoute: () => AppRoute,
 } as any)
+const AppSimulateIndexRoute = AppSimulateIndexRouteImport.update({
+  id: '/simulate/',
+  path: '/simulate/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSimulateAssetIdRoute = AppSimulateAssetIdRouteImport.update({
+  id: '/simulate/$assetId',
+  path: '/simulate/$assetId',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -89,11 +95,12 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/league': typeof AppLeagueRoute
   '/profile': typeof AppProfileRoute
-  '/simulate': typeof AppSimulateRoute
   '/lessons/$lessonId': typeof AppLessonsLessonIdRoute
   '/news/$articleId': typeof AppNewsArticleIdRoute
+  '/simulate/$assetId': typeof AppSimulateAssetIdRoute
   '/lessons/': typeof AppLessonsIndexRoute
   '/news/': typeof AppNewsIndexRoute
+  '/simulate/': typeof AppSimulateIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -102,11 +109,12 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/league': typeof AppLeagueRoute
   '/profile': typeof AppProfileRoute
-  '/simulate': typeof AppSimulateRoute
   '/lessons/$lessonId': typeof AppLessonsLessonIdRoute
   '/news/$articleId': typeof AppNewsArticleIdRoute
+  '/simulate/$assetId': typeof AppSimulateAssetIdRoute
   '/lessons': typeof AppLessonsIndexRoute
   '/news': typeof AppNewsIndexRoute
+  '/simulate': typeof AppSimulateIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -117,11 +125,12 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_app/league': typeof AppLeagueRoute
   '/_app/profile': typeof AppProfileRoute
-  '/_app/simulate': typeof AppSimulateRoute
   '/_app/lessons/$lessonId': typeof AppLessonsLessonIdRoute
   '/_app/news/$articleId': typeof AppNewsArticleIdRoute
+  '/_app/simulate/$assetId': typeof AppSimulateAssetIdRoute
   '/_app/lessons/': typeof AppLessonsIndexRoute
   '/_app/news/': typeof AppNewsIndexRoute
+  '/_app/simulate/': typeof AppSimulateIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -132,11 +141,12 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/league'
     | '/profile'
-    | '/simulate'
     | '/lessons/$lessonId'
     | '/news/$articleId'
+    | '/simulate/$assetId'
     | '/lessons/'
     | '/news/'
+    | '/simulate/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -145,11 +155,12 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/league'
     | '/profile'
-    | '/simulate'
     | '/lessons/$lessonId'
     | '/news/$articleId'
+    | '/simulate/$assetId'
     | '/lessons'
     | '/news'
+    | '/simulate'
   id:
     | '__root__'
     | '/'
@@ -159,11 +170,12 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/_app/league'
     | '/_app/profile'
-    | '/_app/simulate'
     | '/_app/lessons/$lessonId'
     | '/_app/news/$articleId'
+    | '/_app/simulate/$assetId'
     | '/_app/lessons/'
     | '/_app/news/'
+    | '/_app/simulate/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -225,13 +237,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProfileRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/simulate': {
-      id: '/_app/simulate'
-      path: '/simulate'
-      fullPath: '/simulate'
-      preLoaderRoute: typeof AppSimulateRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/_app/lessons/': {
       id: '/_app/lessons/'
       path: '/lessons'
@@ -260,27 +265,43 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppNewsArticleIdRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/simulate/': {
+      id: '/_app/simulate/'
+      path: '/simulate'
+      fullPath: '/simulate/'
+      preLoaderRoute: typeof AppSimulateIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/simulate/$assetId': {
+      id: '/_app/simulate/$assetId'
+      path: '/simulate/$assetId'
+      fullPath: '/simulate/$assetId'
+      preLoaderRoute: typeof AppSimulateAssetIdRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
 interface AppRouteChildren {
   AppLeagueRoute: typeof AppLeagueRoute
   AppProfileRoute: typeof AppProfileRoute
-  AppSimulateRoute: typeof AppSimulateRoute
   AppLessonsLessonIdRoute: typeof AppLessonsLessonIdRoute
   AppNewsArticleIdRoute: typeof AppNewsArticleIdRoute
+  AppSimulateAssetIdRoute: typeof AppSimulateAssetIdRoute
   AppLessonsIndexRoute: typeof AppLessonsIndexRoute
   AppNewsIndexRoute: typeof AppNewsIndexRoute
+  AppSimulateIndexRoute: typeof AppSimulateIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppLeagueRoute: AppLeagueRoute,
   AppProfileRoute: AppProfileRoute,
-  AppSimulateRoute: AppSimulateRoute,
   AppLessonsLessonIdRoute: AppLessonsLessonIdRoute,
   AppNewsArticleIdRoute: AppNewsArticleIdRoute,
+  AppSimulateAssetIdRoute: AppSimulateAssetIdRoute,
   AppLessonsIndexRoute: AppLessonsIndexRoute,
   AppNewsIndexRoute: AppNewsIndexRoute,
+  AppSimulateIndexRoute: AppSimulateIndexRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)

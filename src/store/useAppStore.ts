@@ -1,5 +1,9 @@
 import { create } from "zustand";
-import { persist, createJSONStorage, type StateStorage } from "zustand/middleware";
+import {
+  persist,
+  createJSONStorage,
+  type StateStorage,
+} from "zustand/middleware";
 import {
   STORAGE_KEY,
   STORAGE_VERSION,
@@ -19,6 +23,13 @@ import { bumpStreak, isUnitUp, unitForCompleted } from "@/lib/xp";
 import { canUseFractional } from "@/lib/guards";
 import { nextPrice, nextSeed } from "@/lib/market";
 import { currentWeekId } from "@/lib/league";
+import {
+  buyExecutionPrice,
+  feeFor,
+  FEE_RATE,
+  type OrderType,
+} from "@/lib/trading";
+import { pcMoney } from "@/lib/format";
 
 // -------- Storage with graceful fallbacks --------
 
@@ -55,9 +66,30 @@ export interface CompleteLessonResult {
   newUnit: UnitNumber;
 }
 
+/** What a buy actually filled at — feeds the purchase-confirmation screen. */
+export interface BuyExecution {
+  assetId: AssetId;
+  units: number;
+  execPrice: number;
+  fee: number;
+  /** Cash actually debited. Below the requested amount when units were snapped
+   * to whole numbers; the difference is change. */
+  spent: number;
+  newTotalUnits: number;
+  newAvgCost: number;
+}
+
 export interface TradeResult {
   ok: boolean;
   reason?: string;
+  execution?: BuyExecution;
+}
+
+export interface BuyOptions {
+  orderType?: OrderType;
+  limitPrice?: number;
+  stopLoss?: number;
+  takeProfit?: number;
 }
 
 export interface AppActions {
@@ -67,7 +99,15 @@ export interface AppActions {
   completeLesson: (lessonId: LessonId) => CompleteLessonResult | null;
   initMarket: () => void;
   tick: () => void;
-  trade: (assetId: AssetId, side: "buy" | "sell", units: number) => TradeResult;
+  /** Sell a share count. Proceeds are credited net of the transaction fee. */
+  sell: (assetId: AssetId, units: number) => TradeResult;
+  /** Buy with a pc$ amount — the amount is what leaves your cash, and the fee
+   * comes out of it before shares are priced. */
+  buyWithAmount: (
+    assetId: AssetId,
+    amount: number,
+    opts?: BuyOptions,
+  ) => TradeResult;
   resetAll: () => void;
   consumeLessonCompleteAnimation: () => void;
   rolloverWeekIfNeeded: () => void;
@@ -166,7 +206,10 @@ export const useAppStore = create<AppStore>()(
           let changed = false;
           for (const a of assets) {
             if (!map[a.id]) {
-              map[a.id] = { last: { price: a.startPrice, at: now }, seed: a.seed };
+              map[a.id] = {
+                last: { price: a.startPrice, at: now },
+                seed: a.seed,
+              };
               changed = true;
             }
           }
@@ -179,11 +222,17 @@ export const useAppStore = create<AppStore>()(
           const now = Date.now();
           const newAssets = { ...s.market.assets };
           for (const a of assets) {
-            const cur =
-              newAssets[a.id] ??
-              { last: { price: a.startPrice, at: now }, seed: a.seed };
+            const cur = newAssets[a.id] ?? {
+              last: { price: a.startPrice, at: now },
+              seed: a.seed,
+            };
             const seed = nextSeed(cur.seed);
-            const price = nextPrice(cur.last.price, a.drift, a.volatility, seed);
+            const price = nextPrice(
+              cur.last.price,
+              a.drift,
+              a.volatility,
+              seed,
+            );
             newAssets[a.id] = { last: { price, at: now }, seed };
           }
           let total = s.user.cash;
@@ -196,66 +245,56 @@ export const useAppStore = create<AppStore>()(
           return { market: { assets: newAssets, sessionSeries } };
         }),
 
-      trade: (assetId, side, unitsRaw) => {
+      sell: (assetId, unitsRaw) => {
         const state = get();
         const def = assets.find((a) => a.id === assetId);
         if (!def) return { ok: false, reason: "Unknown asset" };
         const unit = unitForCompleted(state.user.completedLessons);
         if (def.unlockAfterUnit > unit) return { ok: false, reason: "Locked" };
+
         const units = Number(unitsRaw);
         if (!Number.isFinite(units) || units <= 0) {
           return { ok: false, reason: "Enter units above 0" };
         }
-        if (!canUseFractional(unit) && !Number.isInteger(units)) {
-          return { ok: false, reason: "Whole units only at your stage" };
-        }
-        const price = state.market.assets[assetId]?.last.price ?? def.startPrice;
-        const total = units * price;
-        const holding: Holding = state.portfolio.holdings[assetId] ?? {
-          units: 0,
-          avgCost: 0,
-        };
-        if (side === "buy" && state.user.cash < total) {
-          return { ok: false, reason: "Insufficient cash" };
-        }
-        if (side === "sell" && holding.units < units) {
+        const holding = state.portfolio.holdings[assetId];
+        if (!holding || holding.units + 1e-9 < units) {
           return { ok: false, reason: "Not enough units" };
         }
 
+        // Sells fill at the quoted price — slippage is applied on the buy side
+        // only, matching how the invest sheet presents it.
+        const price =
+          state.market.assets[assetId]?.last.price ?? def.startPrice;
+        const gross = units * price;
+        const fee = feeFor(gross);
+
         set((s) => {
-          const h: Holding = s.portfolio.holdings[assetId] ?? { units: 0, avgCost: 0 };
-          let newHolding: Holding;
-          let newCash = s.user.cash;
-          if (side === "buy") {
-            const newUnits = h.units + units;
-            const newAvg =
-              newUnits > 0 ? (h.units * h.avgCost + units * price) / newUnits : 0;
-            newHolding = { units: newUnits, avgCost: newAvg };
-            newCash -= total;
-          } else {
-            const remaining = h.units - units;
-            newHolding =
-              remaining <= 1e-7
-                ? { units: 0, avgCost: 0 }
-                : { units: remaining, avgCost: h.avgCost };
-            newCash += total;
-          }
+          const h: Holding = s.portfolio.holdings[assetId] ?? {
+            units: 0,
+            avgCost: 0,
+          };
+          const remaining = h.units - units;
           const holdings = { ...s.portfolio.holdings };
-          if (newHolding.units <= 0) {
+          if (remaining <= 1e-7) {
             delete holdings[assetId];
           } else {
-            holdings[assetId] = newHolding;
+            holdings[assetId] = { units: remaining, avgCost: h.avgCost };
           }
           const trade: Trade = {
             id: genId(),
             assetId,
-            side,
+            side: "sell",
             units,
             price,
+            fee,
             at: new Date().toISOString(),
           };
           return {
-            user: { ...s.user, cash: newCash, streak: bumpStreak(s.user.streak) },
+            user: {
+              ...s.user,
+              cash: s.user.cash + gross - fee,
+              streak: bumpStreak(s.user.streak),
+            },
             portfolio: {
               holdings,
               history: [trade, ...s.portfolio.history].slice(0, 200),
@@ -265,9 +304,109 @@ export const useAppStore = create<AppStore>()(
         return { ok: true };
       },
 
-      resetAll: () => set(() => ({ ...initialAppState(), pendingLessonComplete: null })),
+      buyWithAmount: (assetId, amountRaw, opts) => {
+        const state = get();
+        const def = assets.find((a) => a.id === assetId);
+        if (!def) return { ok: false, reason: "Unknown asset" };
+        const unit = unitForCompleted(state.user.completedLessons);
+        if (def.unlockAfterUnit > unit) return { ok: false, reason: "Locked" };
 
-      consumeLessonCompleteAnimation: () => set({ pendingLessonComplete: null }),
+        const amount = Number(amountRaw);
+        if (!Number.isFinite(amount) || amount <= 0) {
+          return { ok: false, reason: "Enter an amount above 0" };
+        }
+        if (amount > state.user.cash)
+          return { ok: false, reason: "Insufficient cash" };
+
+        const quoted =
+          state.market.assets[assetId]?.last.price ?? def.startPrice;
+        const orderType: OrderType = opts?.orderType ?? "market";
+        const limit = opts?.limitPrice;
+        // A limit order fills at the price you named; a market order takes
+        // whatever the book gives you, which is never better than quoted.
+        const execPrice =
+          orderType === "limit" &&
+          Number.isFinite(limit) &&
+          (limit as number) > 0
+            ? (limit as number)
+            : buyExecutionPrice(quoted);
+
+        const fee = feeFor(amount);
+        const invested = amount - fee;
+        const rawUnits = invested / execPrice;
+
+        // Below unit 3 the learner hasn't met fractional shares yet, so the
+        // amount buys whole units and the remainder is returned as change.
+        const fractional = canUseFractional(unit);
+        const units = fractional ? rawUnits : Math.floor(rawUnits);
+        if (units <= 0) {
+          return {
+            ok: false,
+            reason: `Not enough for one whole unit — you need ${pcMoney(execPrice / (1 - FEE_RATE))}`,
+          };
+        }
+
+        const gross = units * execPrice;
+        const spent = gross + fee;
+
+        const prev: Holding = state.portfolio.holdings[assetId] ?? {
+          units: 0,
+          avgCost: 0,
+        };
+        const newTotalUnits = prev.units + units;
+        const newAvgCost =
+          newTotalUnits > 0
+            ? (prev.units * prev.avgCost + units * execPrice) / newTotalUnits
+            : 0;
+
+        set((s) => {
+          const trade: Trade = {
+            id: genId(),
+            assetId,
+            side: "buy",
+            units,
+            price: execPrice,
+            fee,
+            at: new Date().toISOString(),
+            orderType,
+            ...(opts?.stopLoss ? { stopLoss: opts.stopLoss } : {}),
+            ...(opts?.takeProfit ? { takeProfit: opts.takeProfit } : {}),
+          };
+          return {
+            user: {
+              ...s.user,
+              cash: s.user.cash - spent,
+              streak: bumpStreak(s.user.streak),
+            },
+            portfolio: {
+              holdings: {
+                ...s.portfolio.holdings,
+                [assetId]: { units: newTotalUnits, avgCost: newAvgCost },
+              },
+              history: [trade, ...s.portfolio.history].slice(0, 200),
+            },
+          };
+        });
+
+        return {
+          ok: true,
+          execution: {
+            assetId,
+            units,
+            execPrice,
+            fee,
+            spent,
+            newTotalUnits,
+            newAvgCost,
+          },
+        };
+      },
+
+      resetAll: () =>
+        set(() => ({ ...initialAppState(), pendingLessonComplete: null })),
+
+      consumeLessonCompleteAnimation: () =>
+        set({ pendingLessonComplete: null }),
 
       rolloverWeekIfNeeded: () =>
         set((s) => {

@@ -12,7 +12,6 @@ import { Button } from "@/components/ui/button";
 import { PracticeMoneyBadge } from "@/components/simulate/PracticeMoneyBadge";
 import { PortfolioSummary } from "@/components/simulate/PortfolioSummary";
 import { AssetRow, LockedAssetTeaser } from "@/components/simulate/AssetRow";
-import { TradeSheet } from "@/components/simulate/TradeSheet";
 import { assets } from "@/content/assets";
 import { useAppStore } from "@/store/useAppStore";
 import { unitForCompleted } from "@/lib/xp";
@@ -21,7 +20,7 @@ import { track } from "@/lib/analytics";
 
 const SESSION_MODAL_KEY = "iinvest.simulate.introSeen";
 
-export const Route = createFileRoute("/_app/simulate")({
+export const Route = createFileRoute("/_app/simulate/")({
   head: () => ({
     meta: [
       { title: "Simulate · iInvest" },
@@ -60,7 +59,6 @@ function SimulateScreen() {
   // Assets unlock at units 1, 3 and 5 — surface whichever tier is still ahead.
   const nextLockedTier: 3 | 5 | null = unit < 3 ? 3 : unit < 5 ? 5 : null;
 
-  const [openId, setOpenId] = useState<string | null>(null);
   const [showIntro, setShowIntro] = useState(false);
 
   // First-open-per-session modal.
@@ -104,7 +102,8 @@ function SimulateScreen() {
         <PracticeMoneyBadge />
         <h1 className="text-3xl font-bold tracking-tight">Simulate</h1>
         <p className="text-sm text-muted-foreground">
-          Practice buying and selling. Prices are made-up and update every few seconds.
+          Practice buying and selling. Prices are made-up and update every few
+          seconds.
         </p>
       </header>
 
@@ -117,7 +116,7 @@ function SimulateScreen() {
           </h2>
           <div className="space-y-2">
             {held.map((a) => (
-              <AssetRow key={a.id} asset={a} onOpen={setOpenId} />
+              <AssetRow key={a.id} asset={a} />
             ))}
           </div>
         </section>
@@ -129,25 +128,19 @@ function SimulateScreen() {
         </h2>
         <div className="space-y-2">
           {available.map((a) => (
-            <AssetRow key={a.id} asset={a} onOpen={setOpenId} />
+            <AssetRow key={a.id} asset={a} />
           ))}
           {nextLockedTier && <LockedAssetTeaser nextUnit={nextLockedTier} />}
         </div>
       </section>
-
-      <TradeSheet
-        assetId={openId}
-        open={openId !== null}
-        onOpenChange={(o) => !o && setOpenId(null)}
-      />
 
       <Dialog open={showIntro} onOpenChange={(o) => !o && dismissIntro()}>
         <DialogContent className="rounded-3xl">
           <DialogHeader>
             <DialogTitle>This is practice money</DialogTitle>
             <DialogDescription>
-              Nothing here connects to real markets or a real broker. Every price is
-              made up so you can safely try things out.
+              Nothing here connects to real markets or a real broker. Every
+              price is made up so you can safely try things out.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

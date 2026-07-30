@@ -1,7 +1,13 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Check, LineChart, Lock } from "lucide-react";
-import { lessons, lessonsByUnit, units, unitById, type LessonDef } from "@/content/lessons";
+import {
+  lessons,
+  lessonsByUnit,
+  units,
+  unitById,
+  type LessonDef,
+} from "@/content/lessons";
 import { useAppStore } from "@/store/useAppStore";
 import { usePrefersReducedMotion } from "@/hooks/use-reduced-motion";
 import { cn } from "@/lib/utils";
@@ -21,8 +27,48 @@ const UNIT_IDS = units.map((u) => u.id);
 const AMP = 22;
 const STEP = Math.PI / 2;
 
-function isUnitComplete(unitLessons: LessonDef[], completed: string[]): boolean {
-  return unitLessons.length > 0 && unitLessons.every((l) => completed.includes(l.id));
+function isUnitComplete(
+  unitLessons: LessonDef[],
+  completed: string[],
+): boolean {
+  return (
+    unitLessons.length > 0 && unitLessons.every((l) => completed.includes(l.id))
+  );
+}
+
+/**
+ * The path's horizontal offset at the container's center line, in the same %
+ * units as `offsets`.
+ *
+ * Interpolated between the two nodes straddling the center rather than just
+ * taking the nearest one — snapping to the nearest node would make the track
+ * jump sideways as the midpoint between two nodes crossed the center line.
+ * `centers` may contain NaN for nodes whose ref hasn't attached yet.
+ */
+function offsetAtCenter(
+  centers: number[],
+  offsets: number[],
+  centerY: number,
+): number {
+  const pts: { y: number; x: number }[] = [];
+  for (let i = 0; i < centers.length; i++) {
+    if (Number.isFinite(centers[i]))
+      pts.push({ y: centers[i], x: offsets[i] ?? 0 });
+  }
+  if (pts.length === 0) return 0;
+  if (centerY <= pts[0].y) return pts[0].x;
+  const last = pts[pts.length - 1];
+  if (centerY >= last.y) return last.x;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const a = pts[i];
+    const b = pts[i + 1];
+    if (centerY >= a.y && centerY <= b.y) {
+      const span = b.y - a.y;
+      const t = span > 0 ? (centerY - a.y) / span : 0;
+      return a.x + (b.x - a.x) * t;
+    }
+  }
+  return last.x;
 }
 
 function stateFor(
@@ -39,7 +85,9 @@ export function LessonPath({ completedLessons }: Props) {
   const [toast, setToast] = useState<string | null>(null);
   const reducedMotion = usePrefersReducedMotion();
   const pendingLessonComplete = useAppStore((s) => s.pendingLessonComplete);
-  const consumeLessonCompleteAnimation = useAppStore((s) => s.consumeLessonCompleteAnimation);
+  const consumeLessonCompleteAnimation = useAppStore(
+    (s) => s.consumeLessonCompleteAnimation,
+  );
 
   const grouped = useMemo(() => {
     const byUnit = {} as Record<UnitNumber, LessonDef[]>;
@@ -67,7 +115,9 @@ export function LessonPath({ completedLessons }: Props) {
   const levelUnlocked =
     selectedUnit === 1 ||
     isUnitComplete(grouped[(selectedUnit - 1) as UnitNumber], completedLessons);
-  const completedInLevel = levelLessons.filter((l) => completedLessons.includes(l.id)).length;
+  const completedInLevel = levelLessons.filter((l) =>
+    completedLessons.includes(l.id),
+  ).length;
   const activeLessonId = levelUnlocked
     ? (levelLessons.find((l) => !completedLessons.includes(l.id))?.id ?? null)
     : null;
@@ -95,6 +145,7 @@ export function LessonPath({ completedLessons }: Props) {
   }, [offsets]);
 
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const trackRef = useRef<HTMLDivElement | null>(null);
   const nodeRefs = useRef<Partial<Record<string, HTMLElement | null>>>({});
   const nodeWrapRefs = useRef<Partial<Record<string, HTMLElement | null>>>({});
   const [pulsingLessonId, setPulsingLessonId] = useState<string | null>(null);
@@ -119,7 +170,8 @@ export function LessonPath({ completedLessons }: Props) {
     const finish = () => {
       if (settled) return;
       settled = true;
-      const wanted = target.offsetTop + target.offsetHeight / 2 - root.clientHeight / 2;
+      const wanted =
+        target.offsetTop + target.offsetHeight / 2 - root.clientHeight / 2;
       if (Math.abs(root.scrollTop - wanted) > 4) {
         target.scrollIntoView({ behavior: "auto", block: "center" });
       }
@@ -167,6 +219,9 @@ export function LessonPath({ completedLessons }: Props) {
 
   // Scroll-driven enlarge: scale + fade each node by its distance from the
   // scroll container's vertical center, recalculated every scroll frame.
+  // The same pass pans the track sideways so the vertically-centered node is
+  // also horizontally centered — the view rides along the zig-zag rather than
+  // letting it wander off to one side.
   useEffect(() => {
     const root = scrollRef.current;
     if (!root) return;
@@ -175,20 +230,34 @@ export function LessonPath({ completedLessons }: Props) {
       raf = 0;
       const rootRect = root.getBoundingClientRect();
       const centerY = rootRect.top + rootRect.height / 2;
+      const centers: number[] = [];
       for (const lesson of levelLessons) {
         const el = nodeRefs.current[lesson.id];
-        if (!el) continue;
+        if (!el) {
+          centers.push(Number.NaN);
+          continue;
+        }
+        const rect = el.getBoundingClientRect();
+        centers.push(rect.top + rect.height / 2);
         if (reducedMotion) {
           el.style.transform = "";
           el.style.opacity = "";
           continue;
         }
-        const rect = el.getBoundingClientRect();
         const dist = Math.abs(rect.top + rect.height / 2 - centerY);
         const scale = Math.max(0.85, Math.min(1.12, 1.12 - dist / 260));
         const opacity = Math.max(0.55, Math.min(1, 1 - dist / 420));
         el.style.transform = `scale(${scale})`;
         el.style.opacity = String(opacity);
+      }
+
+      const track = trackRef.current;
+      if (track) {
+        // Reduced motion keeps the path where the layout put it — a sideways
+        // pan on every scroll frame is exactly the kind of movement to drop.
+        track.style.transform = reducedMotion
+          ? ""
+          : `translateX(${-offsetAtCenter(centers, offsets, centerY)}%)`;
       }
     };
     const onScroll = () => {
@@ -200,7 +269,7 @@ export function LessonPath({ completedLessons }: Props) {
       root.removeEventListener("scroll", onScroll);
       if (raf) cancelAnimationFrame(raf);
     };
-  }, [levelLessons, reducedMotion]);
+  }, [levelLessons, offsets, reducedMotion]);
 
   // On lesson completion: pop the node, then advance — possibly into the
   // next level, in which case the layout effect above re-centers us there.
@@ -296,7 +365,9 @@ export function LessonPath({ completedLessons }: Props) {
               {levelStatus}
             </span>
           </div>
-          <p className="mt-1 text-sm text-muted-foreground">{unitMeta?.subtitle}</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {unitMeta?.subtitle}
+          </p>
           <div className="mt-3 space-y-1.5">
             <div className="flex items-center justify-between text-xs">
               <span className="font-semibold uppercase tracking-wide text-muted-foreground">
@@ -334,7 +405,11 @@ export function LessonPath({ completedLessons }: Props) {
           )}
         >
           <div style={{ height: edgePad }} aria-hidden />
-          <div className="relative">
+          <div
+            ref={trackRef}
+            className="relative"
+            style={{ willChange: "transform" }}
+          >
             <svg
               className="pointer-events-none absolute inset-0 h-full w-full"
               viewBox={`0 0 100 ${Math.max(levelLessons.length, 1)}`}
@@ -355,7 +430,11 @@ export function LessonPath({ completedLessons }: Props) {
 
             <div className="relative flex flex-col items-center gap-11 py-2">
               {levelLessons.map((lesson, i) => {
-                const state = stateFor(lesson, completedLessons, activeLessonId);
+                const state = stateFor(
+                  lesson,
+                  completedLessons,
+                  activeLessonId,
+                );
                 return (
                   <div
                     key={lesson.id}
@@ -410,7 +489,12 @@ interface LessonNodeButtonProps {
 // tokens) to mirror starter-react-app's lesson chart exactly; only the
 // "current" node switches to the app's own primary in dark mode, since a
 // near-black square would otherwise vanish against the dark background.
-function LessonNodeButton({ lesson, state, onLockedTap, isPulsing }: LessonNodeButtonProps) {
+function LessonNodeButton({
+  lesson,
+  state,
+  onLockedTap,
+  isPulsing,
+}: LessonNodeButtonProps) {
   const isLocked = state === "locked";
 
   const sizeClass =

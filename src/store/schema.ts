@@ -3,7 +3,9 @@
 
 import { currentWeekId } from "@/lib/league";
 
-export const STORAGE_VERSION = 4;
+// v5: Trade records gained fee/execPrice/orderType/protections when the
+// simulator started charging fees and applying slippage.
+export const STORAGE_VERSION = 5;
 export const STORAGE_KEY = "iinvest.v1";
 
 export type LessonId = string; // e.g. "U1.2"
@@ -60,8 +62,15 @@ export interface Trade {
   assetId: AssetId;
   side: "buy" | "sell";
   units: number;
+  /** Price the trade actually filled at — includes buy-side slippage. */
   price: number;
+  /** Transaction fee charged, in pc$. */
+  fee: number;
   at: string; // ISO
+  /** Buys only. Sells are always market orders. */
+  orderType?: "market" | "limit";
+  stopLoss?: number;
+  takeProfit?: number;
 }
 
 export interface PortfolioState {
