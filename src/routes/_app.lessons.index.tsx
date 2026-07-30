@@ -14,14 +14,16 @@ export const Route = createFileRoute("/_app/lessons/")({
       { property: "og:title", content: "Lessons · iInvest" },
       {
         property: "og:description",
-        content: "Bite-sized investing lessons. Earn XP and practice money as you learn.",
+        content:
+          "Bite-sized investing lessons. Earn XP and practice money as you learn.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Lessons · iInvest" },
       {
         name: "twitter:description",
-        content: "Bite-sized investing lessons. Earn XP and practice money as you learn.",
+        content:
+          "Bite-sized investing lessons. Earn XP and practice money as you learn.",
       },
     ],
   }),

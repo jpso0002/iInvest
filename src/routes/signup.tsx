@@ -1,6 +1,12 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowLeft, PiggyBank, Rocket, Target, type LucideIcon } from "lucide-react";
+import {
+  ArrowLeft,
+  PiggyBank,
+  Rocket,
+  Target,
+  type LucideIcon,
+} from "lucide-react";
 import { PlacementQuiz } from "@/components/onboarding/PlacementQuiz";
 import { useAppStore } from "@/store/useAppStore";
 import { track } from "@/lib/analytics";
@@ -66,7 +72,9 @@ function SignupPage() {
     return (
       <PlacementQuiz
         onFinish={(unit) => {
-          setUser({ profile: { name: name.trim(), email: email.trim(), goal } });
+          setUser({
+            profile: { name: name.trim(), email: email.trim(), goal },
+          });
           completeOnboarding(unit);
           track({ type: "onboarding_completed", placementUnit: unit });
           navigate({ to: "/lessons", replace: true });
@@ -81,7 +89,9 @@ function SignupPage() {
     <main className="mx-auto flex min-h-full w-full max-w-md flex-col bg-background px-5 pb-10 pt-8 text-foreground">
       <button
         type="button"
-        onClick={() => (step === "goal" ? setStep("identity") : navigate({ to: "/" }))}
+        onClick={() =>
+          step === "goal" ? setStep("identity") : navigate({ to: "/" })
+        }
         aria-label="Back"
         className="flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent"
       >
@@ -90,13 +100,17 @@ function SignupPage() {
 
       {step === "identity" && (
         <div className="flex flex-1 flex-col pt-6">
-          <h1 className="text-3xl font-bold tracking-tight">Create your account</h1>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Create your account
+          </h1>
           <p className="mt-3 text-base text-muted-foreground">
             Your info stays on this device — no real data is sent anywhere.
           </p>
           <div className="mt-8 flex flex-col gap-4">
             <label className="flex flex-col gap-1.5">
-              <span className="text-sm font-medium text-muted-foreground">First name</span>
+              <span className="text-sm font-medium text-muted-foreground">
+                First name
+              </span>
               <input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -105,7 +119,9 @@ function SignupPage() {
               />
             </label>
             <label className="flex flex-col gap-1.5">
-              <span className="text-sm font-medium text-muted-foreground">Email</span>
+              <span className="text-sm font-medium text-muted-foreground">
+                Email
+              </span>
               <input
                 type="email"
                 value={email}
@@ -128,7 +144,9 @@ function SignupPage() {
 
       {step === "goal" && (
         <div className="flex flex-1 flex-col pt-6">
-          <h1 className="text-3xl font-bold tracking-tight">What's your main goal?</h1>
+          <h1 className="text-3xl font-bold tracking-tight">
+            What's your main goal?
+          </h1>
           <p className="mt-3 text-base text-muted-foreground">
             We'll tailor your journey based on your answer.
           </p>
@@ -144,15 +162,22 @@ function SignupPage() {
                   aria-checked={selected}
                   onClick={() => setGoal(g.key)}
                   className={`flex w-full items-start gap-3 rounded-2xl border-2 px-4 py-4 text-left transition-all active:scale-[0.99] ${
-                    selected ? "border-primary bg-accent" : "border-border bg-card hover:border-primary"
+                    selected
+                      ? "border-primary bg-accent"
+                      : "border-border bg-card hover:border-primary"
                   }`}
                 >
-                  <Icon className="mt-0.5 h-5 w-5 flex-none text-primary" strokeWidth={1.9} />
+                  <Icon
+                    className="mt-0.5 h-5 w-5 flex-none text-primary"
+                    strokeWidth={1.9}
+                  />
                   <span>
                     <span className="block text-base font-medium text-card-foreground">
                       {g.title}
                     </span>
-                    <span className="mt-0.5 block text-sm text-muted-foreground">{g.body}</span>
+                    <span className="mt-0.5 block text-sm text-muted-foreground">
+                      {g.body}
+                    </span>
                   </span>
                 </button>
               );

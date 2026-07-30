@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Info } from "lucide-react";
+import { ArrowLeft, Info, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PracticeMoneyBadge } from "@/components/simulate/PracticeMoneyBadge";
 import { PriceChangeTag } from "@/components/simulate/PriceChangeTag";
@@ -12,12 +12,14 @@ import { LockedTeaser } from "@/components/simulate/LockedTeaser";
 import { PendingOrders } from "@/components/simulate/PendingOrders";
 import { InvestSheet } from "@/components/simulate/InvestSheet";
 import { SellSheet } from "@/components/simulate/SellSheet";
+import { ProtectSheet } from "@/components/simulate/ProtectSheet";
 import { PurchaseConfirmation } from "@/components/simulate/PurchaseConfirmation";
 import { assetById, kindLabel } from "@/content/assets";
 import { assetDetail, TIMEFRAMES, type Timeframe } from "@/content/assetDetail";
 import { useAppStore, type BuyExecution } from "@/store/useAppStore";
 import { useLivePrice } from "@/hooks/use-live-price";
 import { unitForCompleted } from "@/lib/xp";
+import { canUseTargetOrders } from "@/lib/guards";
 import {
   ASSET_DISCLOSURE_LEVELS,
   isUnlocked,
@@ -67,7 +69,7 @@ function AssetDetailScreen() {
   const initMarket = useAppStore((s) => s.initMarket);
 
   const [timeframe, setTimeframe] = useState<Timeframe>("1M");
-  const [sheet, setSheet] = useState<"buy" | "sell" | null>(null);
+  const [sheet, setSheet] = useState<"buy" | "sell" | "protect" | null>(null);
   const [filled, setFilled] = useState<BuyExecution | null>(null);
 
   // Prices tick from the list screen, but the detail route can be deep-linked
@@ -197,6 +199,19 @@ function AssetDetailScreen() {
               <p className="text-sm text-muted-foreground">
                 Invest to see your position appear here.
               </p>
+            )}
+            {/* Same tier that unlocks protections in the buy flow — but usable
+                on a position you already hold, not just at the moment of buying. */}
+            {hasPosition && canUseTargetOrders(completed) && (
+              <Button
+                type="button"
+                variant="outline"
+                className="mt-4 w-full rounded-full"
+                onClick={() => setSheet("protect")}
+              >
+                <Shield className="mr-2 h-4 w-4" />
+                Protect this position
+              </Button>
             )}
           </Card>
         )}
@@ -467,6 +482,14 @@ function AssetDetailScreen() {
         <SellSheet
           asset={asset}
           open={sheet === "sell"}
+          onOpenChange={(o) => !o && setSheet(null)}
+        />
+      )}
+
+      {hasPosition && (
+        <ProtectSheet
+          asset={asset}
+          open={sheet === "protect"}
           onOpenChange={(o) => !o && setSheet(null)}
         />
       )}

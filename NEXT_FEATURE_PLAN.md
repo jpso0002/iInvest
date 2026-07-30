@@ -122,11 +122,21 @@ Cap open orders per asset (3 is plenty) so `tick()` stays cheap at a 3s cadence.
 | Fill toasts | Fire and render (amber for stop-loss, green for limit fill) |
 | Console on a clean load | Zero errors |
 
-## Still open after this work
+## Follow-ups — all three done
 
-- **Protections can only be attached at buy time.** There's no way to add or move a stop on a position you already hold. A "Protect this position" entry point on the detail screen is the obvious follow-up.
+1. **Tests.** ~~Zero in the repo.~~ `bun test` (built in, no new runtime deps; `@types/bun` added as a dev dep and `"bun"` added to `tsconfig` `types`). **28 tests across 2 files**, all passing:
+   - `src/lib/trading.test.ts` — the pure rules, plus a 500-iteration property check that a market buy never fills better than quoted nor beyond the slippage cap.
+   - `src/store/orders.test.ts` — store behaviour, led by a **named regression test for the pc$0.01 exploit**, plus cash reservation/refund, the per-asset cap, limit filling at trigger, stop gapping below trigger, and a stale stop being clamped to what's still held.
+   - Worth knowing: `tick()` advances the random walk *before* evaluating orders, so a fill uses the freshly-walked price, not the one a test seeds. Two tests initially failed on exactly this; the tests were wrong, not the engine.
+2. **Protections on an existing position.** ~~Only settable at buy time.~~ New `ProtectSheet` + a "Protect this position" button on the position card, gated by the same `canUseTargetOrders` tier. Stop/target toggle, −5/−10/−20% and +10/+25/+50% presets off the live price, and distance-from-market readout.
+3. **Transaction history.** ~~`portfolio.history` only surfaced per-asset.~~ New `/simulate/history` route, linked from the simulate list, grouped by day with buy/sell direction, net amount, per-trade fee, a running total of fees paid, and a badge naming how each trade came about (Market order / Limit order filled / Stop-loss triggered / Take-profit hit).
+
+## Still open
+
 - **The purchase-confirmation screen can go stale.** If a stop fires while you're still reading the confirmation, it shows a position you no longer hold. Harmless but confusing.
-- **Tests.** See below — still zero, and the fill engine is now the highest-value thing to cover.
+- **No way to edit a resting order** — you can cancel and re-place, but not move a trigger.
+- **`<Toaster />` had never been mounted**, so all toasts were no-ops until this work. Worth a sweep for other components assumed-wired-but-not.
+- Backend / real League, per the original alternatives table.
 
 ## Testing — worth starting here
 

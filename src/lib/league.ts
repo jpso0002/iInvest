@@ -41,7 +41,11 @@ export const LEAGUE_BOTS: LeagueBot[] = [
 
 /** Deterministic per-week jitter so the leaderboard differs week to week
  * (same week → same numbers) without any backend. */
-export const weeklyBotXp = (bot: LeagueBot, weekId: number, daysElapsed: number): number => {
+export const weeklyBotXp = (
+  bot: LeagueBot,
+  weekId: number,
+  daysElapsed: number,
+): number => {
   const seed = (weekId * 2654435761 + bot.name.length * 40503) >>> 0;
   const wobble = 0.6 + ((seed % 100) / 100) * 0.9; // 0.6-1.5x
   const perDay = bot.base * wobble;

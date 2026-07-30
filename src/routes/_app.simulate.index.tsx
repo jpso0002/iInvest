@@ -1,5 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import { Receipt } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -54,6 +55,7 @@ function SimulateScreen() {
   const tick = useAppStore((s) => s.tick);
   const unit = useAppStore((s) => unitForCompleted(s.user.completedLessons));
   const holdings = useAppStore((s) => s.portfolio.holdings);
+  const tradeCount = useAppStore((s) => s.portfolio.history.length);
 
   const unlocked = useMemo(() => unlockedAssets(unit), [unit]);
   // Assets unlock at units 1, 3 and 5 — surface whichever tier is still ahead.
@@ -108,6 +110,19 @@ function SimulateScreen() {
       </header>
 
       <PortfolioSummary />
+
+      <Link
+        to="/simulate/history"
+        className="flex items-center justify-between rounded-2xl border border-border bg-card px-4 py-3 text-sm transition-colors hover:bg-secondary/60"
+      >
+        <span className="flex items-center gap-2 font-medium">
+          <Receipt className="h-4 w-4 text-muted-foreground" />
+          Transaction history
+        </span>
+        <span className="text-xs text-muted-foreground tabular">
+          {tradeCount} trade{tradeCount === 1 ? "" : "s"}
+        </span>
+      </Link>
 
       {held.length > 0 && (
         <section className="space-y-2">

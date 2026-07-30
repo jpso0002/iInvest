@@ -42,18 +42,23 @@ function LoginPage() {
           {user.onboarded ? (
             <>
               <h1 className="mt-4 text-3xl font-bold tracking-tight">
-                {user.profile.name ? `Welcome back, ${user.profile.name}` : "Welcome back"}
+                {user.profile.name
+                  ? `Welcome back, ${user.profile.name}`
+                  : "Welcome back"}
               </h1>
               <p className="mt-3 text-base text-muted-foreground">
-                Your progress is saved on this device. Pick up right where you left off.
+                Your progress is saved on this device. Pick up right where you
+                left off.
               </p>
             </>
           ) : (
             <>
-              <h1 className="mt-4 text-3xl font-bold tracking-tight">No account on this device</h1>
+              <h1 className="mt-4 text-3xl font-bold tracking-tight">
+                No account on this device
+              </h1>
               <p className="mt-3 text-base text-muted-foreground">
-                iInvest doesn't have real accounts yet — progress lives on the device you signed
-                up on. Create one to get started here.
+                iInvest doesn't have real accounts yet — progress lives on the
+                device you signed up on. Create one to get started here.
               </p>
             </>
           )}

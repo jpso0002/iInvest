@@ -12,7 +12,10 @@ export const Route = createFileRoute("/")({
         content:
           "Bite-sized investing lessons paired with a practice-money trading simulator. No jargon, no real trades — just confidence you can actually build.",
       },
-      { property: "og:title", content: "iInvest — Learn to invest, one bite at a time" },
+      {
+        property: "og:title",
+        content: "iInvest — Learn to invest, one bite at a time",
+      },
       {
         property: "og:description",
         content:
@@ -20,7 +23,10 @@ export const Route = createFileRoute("/")({
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "iInvest — Learn to invest, one bite at a time" },
+      {
+        name: "twitter:title",
+        content: "iInvest — Learn to invest, one bite at a time",
+      },
       {
         name: "twitter:description",
         content:
@@ -60,7 +66,8 @@ function Index() {
           Learn to invest, one bite at a time.
         </h1>
         <p className="mt-3 text-base text-muted-foreground">
-          Short lessons, then practice with pretend money. No jargon. No real trades.
+          Short lessons, then practice with pretend money. No jargon. No real
+          trades.
         </p>
       </div>
       <div className="mt-8 flex flex-col gap-3">

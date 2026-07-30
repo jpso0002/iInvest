@@ -46,7 +46,8 @@ function LessonNotFound() {
       <SearchX className="h-10 w-10 text-muted-foreground" strokeWidth={1.75} />
       <h1 className="mt-3 text-xl font-semibold">Lesson not found</h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        We couldn't find lesson <span className="font-mono">{params.lessonId}</span>.
+        We couldn't find lesson{" "}
+        <span className="font-mono">{params.lessonId}</span>.
       </p>
     </main>
   );
@@ -55,7 +56,10 @@ function LessonNotFound() {
 function LessonError({ error, reset }: { error: Error; reset: () => void }) {
   return (
     <main className="flex min-h-[60dvh] flex-col items-center justify-center px-5 text-center">
-      <TriangleAlert className="h-10 w-10 text-destructive" strokeWidth={1.75} />
+      <TriangleAlert
+        className="h-10 w-10 text-destructive"
+        strokeWidth={1.75}
+      />
       <h1 className="mt-3 text-xl font-semibold">Something broke</h1>
       <p className="mt-1 text-sm text-muted-foreground">{error.message}</p>
       <button
@@ -85,7 +89,9 @@ function LessonPlayer() {
   const [phase, setPhase] = useState<"intro" | "step" | "complete">("intro");
   const [stepIndex, setStepIndex] = useState(0);
   const [result, setResult] = useState<CompleteLessonResult | null>(null);
-  const [wasCompletedBefore] = useState(() => completedLessons.includes(lesson.id));
+  const [wasCompletedBefore] = useState(() =>
+    completedLessons.includes(lesson.id),
+  );
 
   // Resume from persisted progress on mount.
   useEffect(() => {
@@ -183,11 +189,19 @@ function LessonPlayer() {
           <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
             {lesson.id} · Unit {lesson.unit}
           </div>
-          <h1 className="mt-1 text-3xl font-bold tracking-tight">{lesson.title}</h1>
-          <p className="mt-3 text-base text-muted-foreground">{lesson.summary}</p>
+          <h1 className="mt-1 text-3xl font-bold tracking-tight">
+            {lesson.title}
+          </h1>
+          <p className="mt-3 text-base text-muted-foreground">
+            {lesson.summary}
+          </p>
           <div className="mt-6 rounded-2xl bg-accent px-4 py-3 text-sm text-accent-foreground">
-            Reward on completion: <span className="font-semibold">+{lesson.reward.xp} XP</span>{" "}
-            and <span className="font-semibold">pc${lesson.reward.cash} practice cash</span>.
+            Reward on completion:{" "}
+            <span className="font-semibold">+{lesson.reward.xp} XP</span> and{" "}
+            <span className="font-semibold">
+              pc${lesson.reward.cash} practice cash
+            </span>
+            .
           </div>
           <div className="mt-auto pt-6">
             <button
@@ -205,8 +219,12 @@ function LessonPlayer() {
         (() => {
           const step = lesson.steps[stepIndex];
           if (step.kind === "concept")
-            return <ConceptCard key={stepIndex} step={step} onContinue={advance} />;
-          return <QuestionMCQ key={stepIndex} step={step} onContinue={advance} />;
+            return (
+              <ConceptCard key={stepIndex} step={step} onContinue={advance} />
+            );
+          return (
+            <QuestionMCQ key={stepIndex} step={step} onContinue={advance} />
+          );
         })()}
 
       {phase === "complete" && result && (

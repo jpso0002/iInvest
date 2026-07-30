@@ -44,7 +44,10 @@ function LeaguePage() {
       xp: weeklyBotXp(b, weekId, daysElapsed),
       isUser: false,
     }));
-    const players = [...bots, { name: name || "You", xp: weeklyXp, isUser: true }];
+    const players = [
+      ...bots,
+      { name: name || "You", xp: weeklyXp, isUser: true },
+    ];
     return players.sort((a, b) => b.xp - a.xp);
   }, [weeklyXp, weekId, daysElapsed, name]);
 
@@ -56,7 +59,9 @@ function LeaguePage() {
         <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-accent">
           <Trophy className="h-7 w-7 text-primary" strokeWidth={1.6} />
         </div>
-        <h1 className="mt-3 text-2xl font-bold tracking-tight text-foreground">{league}</h1>
+        <h1 className="mt-3 text-2xl font-bold tracking-tight text-foreground">
+          {league}
+        </h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Earn XP this week to climb the leaderboard.
         </p>
@@ -83,8 +88,12 @@ function LeaguePage() {
             <span className="w-5 text-sm font-semibold tabular-nums text-muted-foreground">
               {i + 1}
             </span>
-            <span className="flex-1 text-sm font-medium text-card-foreground">{p.name}</span>
-            <span className="text-sm font-semibold tabular-nums text-foreground">{p.xp} XP</span>
+            <span className="flex-1 text-sm font-medium text-card-foreground">
+              {p.name}
+            </span>
+            <span className="text-sm font-semibold tabular-nums text-foreground">
+              {p.xp} XP
+            </span>
           </div>
         ))}
       </div>

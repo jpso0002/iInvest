@@ -1,6 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Check, Flame, Moon, Star, Wallet, type LucideIcon } from "lucide-react";
+import {
+  Check,
+  Flame,
+  Moon,
+  Star,
+  Wallet,
+  type LucideIcon,
+} from "lucide-react";
 import { useAppStore } from "@/store/useAppStore";
 import { useThemeStore } from "@/store/useThemeStore";
 import { STORAGE_KEY } from "@/store/schema";
@@ -94,7 +101,12 @@ function ProfilePage() {
       <header className="mt-1 flex items-center justify-between">
         <div>
           <div className="flex items-center gap-2 text-4xl font-bold tabular-nums text-foreground">
-            <StatIcon icon={Flame} tone="accent" className="h-9 w-9" iconClassName="h-5 w-5" />
+            <StatIcon
+              icon={Flame}
+              tone="accent"
+              className="h-9 w-9"
+              iconClassName="h-5 w-5"
+            />
             {user.streak.count}
           </div>
           <div className="mt-1 text-xs uppercase tracking-wide text-muted-foreground">
@@ -116,7 +128,12 @@ function ProfilePage() {
 
       <section className="mt-6 grid grid-cols-2 gap-3">
         <Card icon={Star} tone="primary" label="XP" value={String(user.xp)} />
-        <Card icon={Wallet} tone="practice" label="Practice cash" value={pcMoney(user.cash)} />
+        <Card
+          icon={Wallet}
+          tone="practice"
+          label="Practice cash"
+          value={pcMoney(user.cash)}
+        />
         <Card
           label="Joined"
           value={new Date(user.joinedAt).toLocaleDateString(undefined, {
@@ -194,8 +211,13 @@ function ProfilePage() {
         <h2 className="text-lg font-semibold text-foreground">Appearance</h2>
         <div className="mt-3 flex items-center justify-between rounded-2xl border border-border bg-card px-4 py-3">
           <div className="flex items-center gap-2">
-            <Moon className="h-4 w-4 text-muted-foreground" strokeWidth={1.75} />
-            <span className="text-sm font-medium text-foreground">Dark mode</span>
+            <Moon
+              className="h-4 w-4 text-muted-foreground"
+              strokeWidth={1.75}
+            />
+            <span className="text-sm font-medium text-foreground">
+              Dark mode
+            </span>
           </div>
           <Switch
             checked={dark}
@@ -209,7 +231,9 @@ function ProfilePage() {
       </section>
 
       <section className="mt-8">
-        <h2 className="text-lg font-semibold text-foreground">Reset progress</h2>
+        <h2 className="text-lg font-semibold text-foreground">
+          Reset progress
+        </h2>
         <p className="mt-1 text-sm text-muted-foreground">
           Wipes lessons, XP, streak, practice cash, and holdings on this device.
         </p>

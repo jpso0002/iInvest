@@ -8,11 +8,22 @@ const SESSION_KEY = "iinvest.analytics.lastSessionDay";
 export type AnalyticsEvent =
   | { type: "onboarding_completed"; placementUnit: number }
   | { type: "lesson_started"; lessonId: string }
-  | { type: "lesson_completed"; lessonId: string; unit: number; isUnitUp: boolean }
+  | {
+      type: "lesson_completed";
+      lessonId: string;
+      unit: number;
+      isUnitUp: boolean;
+    }
   | { type: "simulate_opened" }
   | { type: "news_opened" }
   | { type: "league_opened" }
-  | { type: "trade_executed"; assetId: string; side: "buy" | "sell"; units: number; price: number }
+  | {
+      type: "trade_executed";
+      assetId: string;
+      side: "buy" | "sell";
+      units: number;
+      price: number;
+    }
   | { type: "real_action_reported"; kind: string }
   | { type: "dark_mode_toggled"; dark: boolean }
   | { type: "session_started" };

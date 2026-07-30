@@ -29,7 +29,11 @@ function MoveTag({ move }: { move: number }) {
     <span
       className={
         "flex items-center gap-0.5 text-xs font-medium tabular " +
-        (isUp ? "text-primary" : isDown ? "text-destructive" : "text-muted-foreground")
+        (isUp
+          ? "text-primary"
+          : isDown
+            ? "text-destructive"
+            : "text-muted-foreground")
       }
     >
       {isUp && <ArrowUpRight className="h-3.5 w-3.5" />}
@@ -51,7 +55,9 @@ function NewsCard({ item }: { item: NewsArticle }) {
         <span aria-hidden="true">·</span>
         <span>{item.time}</span>
       </div>
-      <h3 className="mt-1 text-base font-semibold text-card-foreground">{item.title}</h3>
+      <h3 className="mt-1 text-base font-semibold text-card-foreground">
+        {item.title}
+      </h3>
       <p className="mt-1 text-sm text-muted-foreground">{item.summary}</p>
       <div className="mt-3 flex items-center justify-between">
         <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium uppercase text-muted-foreground">
@@ -76,14 +82,19 @@ function NewsIndex() {
     return () => window.clearInterval(id);
   }, [initMarket, tick]);
 
-  const sorted = useMemo(() => [...NEWS_ARTICLES].sort((a, b) => a.id - b.id), []);
+  const sorted = useMemo(
+    () => [...NEWS_ARTICLES].sort((a, b) => a.id - b.id),
+    [],
+  );
   const [hero, ...rest] = sorted;
 
   return (
     <main className="space-y-4 pb-10 pt-6">
       <header className="px-5">
         <h1 className="text-3xl font-bold tracking-tight">News</h1>
-        <p className="text-sm text-muted-foreground">Simulated quotes and headlines</p>
+        <p className="text-sm text-muted-foreground">
+          Simulated quotes and headlines
+        </p>
       </header>
 
       <MarketTicker />
@@ -98,7 +109,9 @@ function NewsIndex() {
             Top story
           </span>
           <h2 className="mt-3 text-xl font-bold leading-snug">{hero.title}</h2>
-          <p className="mt-2 text-sm text-primary-foreground/85">{hero.summary}</p>
+          <p className="mt-2 text-sm text-primary-foreground/85">
+            {hero.summary}
+          </p>
         </Link>
 
         {rest.map((item) => (

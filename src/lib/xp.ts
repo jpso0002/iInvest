@@ -38,7 +38,10 @@ const yesterdayOf = (isoDay: string): string => {
  * - Consecutive day: +1.
  * - Otherwise: reset to 1.
  */
-export const bumpStreak = (streak: StreakState, today: string = todayUTC()): StreakState => {
+export const bumpStreak = (
+  streak: StreakState,
+  today: string = todayUTC(),
+): StreakState => {
   if (streak.lastActiveDay === today) return streak;
   const yest = yesterdayOf(today);
   const next = streak.lastActiveDay === yest ? streak.count + 1 : 1;

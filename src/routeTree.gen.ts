@@ -22,6 +22,7 @@ import { Route as AppNewsIndexRouteImport } from './routes/_app.news.index'
 import { Route as AppNewsArticleIdRouteImport } from './routes/_app.news.$articleId'
 import { Route as AppSimulateIndexRouteImport } from './routes/_app.simulate.index'
 import { Route as AppSimulateAssetIdRouteImport } from './routes/_app.simulate.$assetId'
+import { Route as AppSimulateHistoryRouteImport } from './routes/_app.simulate.history'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -87,6 +88,11 @@ const AppSimulateAssetIdRoute = AppSimulateAssetIdRouteImport.update({
   path: '/simulate/$assetId',
   getParentRoute: () => AppRoute,
 } as any)
+const AppSimulateHistoryRoute = AppSimulateHistoryRouteImport.update({
+  id: '/simulate/history',
+  path: '/simulate/history',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -98,6 +104,7 @@ export interface FileRoutesByFullPath {
   '/lessons/$lessonId': typeof AppLessonsLessonIdRoute
   '/news/$articleId': typeof AppNewsArticleIdRoute
   '/simulate/$assetId': typeof AppSimulateAssetIdRoute
+  '/simulate/history': typeof AppSimulateHistoryRoute
   '/lessons/': typeof AppLessonsIndexRoute
   '/news/': typeof AppNewsIndexRoute
   '/simulate/': typeof AppSimulateIndexRoute
@@ -112,6 +119,7 @@ export interface FileRoutesByTo {
   '/lessons/$lessonId': typeof AppLessonsLessonIdRoute
   '/news/$articleId': typeof AppNewsArticleIdRoute
   '/simulate/$assetId': typeof AppSimulateAssetIdRoute
+  '/simulate/history': typeof AppSimulateHistoryRoute
   '/lessons': typeof AppLessonsIndexRoute
   '/news': typeof AppNewsIndexRoute
   '/simulate': typeof AppSimulateIndexRoute
@@ -128,6 +136,7 @@ export interface FileRoutesById {
   '/_app/lessons/$lessonId': typeof AppLessonsLessonIdRoute
   '/_app/news/$articleId': typeof AppNewsArticleIdRoute
   '/_app/simulate/$assetId': typeof AppSimulateAssetIdRoute
+  '/_app/simulate/history': typeof AppSimulateHistoryRoute
   '/_app/lessons/': typeof AppLessonsIndexRoute
   '/_app/news/': typeof AppNewsIndexRoute
   '/_app/simulate/': typeof AppSimulateIndexRoute
@@ -144,6 +153,7 @@ export interface FileRouteTypes {
     | '/lessons/$lessonId'
     | '/news/$articleId'
     | '/simulate/$assetId'
+    | '/simulate/history'
     | '/lessons/'
     | '/news/'
     | '/simulate/'
@@ -158,6 +168,7 @@ export interface FileRouteTypes {
     | '/lessons/$lessonId'
     | '/news/$articleId'
     | '/simulate/$assetId'
+    | '/simulate/history'
     | '/lessons'
     | '/news'
     | '/simulate'
@@ -173,6 +184,7 @@ export interface FileRouteTypes {
     | '/_app/lessons/$lessonId'
     | '/_app/news/$articleId'
     | '/_app/simulate/$assetId'
+    | '/_app/simulate/history'
     | '/_app/lessons/'
     | '/_app/news/'
     | '/_app/simulate/'
@@ -279,6 +291,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSimulateAssetIdRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/simulate/history': {
+      id: '/_app/simulate/history'
+      path: '/simulate/history'
+      fullPath: '/simulate/history'
+      preLoaderRoute: typeof AppSimulateHistoryRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
@@ -288,6 +307,7 @@ interface AppRouteChildren {
   AppLessonsLessonIdRoute: typeof AppLessonsLessonIdRoute
   AppNewsArticleIdRoute: typeof AppNewsArticleIdRoute
   AppSimulateAssetIdRoute: typeof AppSimulateAssetIdRoute
+  AppSimulateHistoryRoute: typeof AppSimulateHistoryRoute
   AppLessonsIndexRoute: typeof AppLessonsIndexRoute
   AppNewsIndexRoute: typeof AppNewsIndexRoute
   AppSimulateIndexRoute: typeof AppSimulateIndexRoute
@@ -299,6 +319,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppLessonsLessonIdRoute: AppLessonsLessonIdRoute,
   AppNewsArticleIdRoute: AppNewsArticleIdRoute,
   AppSimulateAssetIdRoute: AppSimulateAssetIdRoute,
+  AppSimulateHistoryRoute: AppSimulateHistoryRoute,
   AppLessonsIndexRoute: AppLessonsIndexRoute,
   AppNewsIndexRoute: AppNewsIndexRoute,
   AppSimulateIndexRoute: AppSimulateIndexRoute,

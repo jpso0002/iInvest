@@ -6,7 +6,9 @@ export const Route = createFileRoute("/_app/news/$articleId")({
   head: ({ params }) => {
     const article = getArticleById(params.articleId);
     return {
-      meta: [{ title: article ? `${article.title} · iInvest` : "News · iInvest" }],
+      meta: [
+        { title: article ? `${article.title} · iInvest` : "News · iInvest" },
+      ],
     };
   },
   component: NewsArticlePage,
@@ -25,7 +27,10 @@ function NewsArticlePage() {
   if (!article) {
     return (
       <main className="space-y-4 px-5 pt-6">
-        <Link to="/news" className="inline-flex items-center gap-1 text-sm text-muted-foreground">
+        <Link
+          to="/news"
+          className="inline-flex items-center gap-1 text-sm text-muted-foreground"
+        >
           <ArrowLeft className="h-4 w-4" /> Back
         </Link>
         <p className="text-sm text-muted-foreground">Article not found.</p>
@@ -38,7 +43,10 @@ function NewsArticlePage() {
 
   return (
     <main className="space-y-4 px-5 pt-6 pb-10">
-      <Link to="/news" className="inline-flex items-center gap-1 text-sm text-muted-foreground">
+      <Link
+        to="/news"
+        className="inline-flex items-center gap-1 text-sm text-muted-foreground"
+      >
         <ArrowLeft className="h-4 w-4" /> News
       </Link>
 
@@ -59,7 +67,11 @@ function NewsArticlePage() {
         <span
           className={
             "flex items-center gap-0.5 text-xs font-medium tabular " +
-            (isUp ? "text-primary" : isDown ? "text-destructive" : "text-muted-foreground")
+            (isUp
+              ? "text-primary"
+              : isDown
+                ? "text-destructive"
+                : "text-muted-foreground")
           }
         >
           {isUp && <ArrowUpRight className="h-3.5 w-3.5" />}
