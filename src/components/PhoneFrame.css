@@ -21,12 +21,24 @@
   min-width: 320px;
   min-height: 100vh;
   min-height: 100dvh;
+  /* A *definite* height, not just a minimum. `.phone-content` is a flex child
+     of this box, so without a resolved height here every percentage height
+     inside the app (`min-h-full` on each screen's <main>) silently collapses to
+     content height, and footer CTAs can't sit at the bottom of the screen.
+     The ≥480px rule below replaces this with the fixed 844px device frame. */
+  height: 100vh;
+  height: 100dvh;
   background: var(--color-cream);
   display: flex;
   flex-direction: column;
   position: relative;
   overflow: hidden;
   box-shadow: var(--shadow-soft);
+  /* Makes this a containing block for `position: fixed` descendants. Radix
+     portals its dialogs and sheets with `fixed`, which otherwise anchors to the
+     viewport — so on a desktop window the modal burst out of the phone and
+     spanned the whole page. With this, overlays stay inside the device. */
+  transform: translateZ(0);
 }
 
 @media (min-width: 480px) {

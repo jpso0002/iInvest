@@ -34,11 +34,12 @@ function LessonsPage() {
   const completed = useAppStore((s) => s.user.completedLessons);
 
   return (
-    // TopStatsBar (~73px) sits above us and the shared _app layout reserves
-    // 96px (pb-24) below for the fixed TabBar — neither is a percentage
-    // ancestor, so we size against the viewport directly to get a real,
-    // bounded box for the internal scroll-snap container to scroll within.
-    <main className="h-[calc(100dvh-73px-96px)]">
+    // `h-full`, not a viewport calc: the app renders inside `.phone-frame`,
+    // which is a fixed 844px on anything wider than a phone. Sizing against
+    // `100dvh` made this box taller than the frame on a desktop browser, so the
+    // path overflowed and left dead space. `.phone-content` is a flex child
+    // with a definite height, so 100% resolves against the real container.
+    <main className="h-full">
       <h1 className="sr-only">Lessons</h1>
       <LessonPath completedLessons={completed} />
     </main>

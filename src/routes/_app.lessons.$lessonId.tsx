@@ -42,7 +42,7 @@ export const Route = createFileRoute("/_app/lessons/$lessonId")({
 function LessonNotFound() {
   const params = Route.useParams();
   return (
-    <main className="flex min-h-[60dvh] flex-col items-center justify-center px-5 text-center">
+    <main className="flex min-h-full flex-col items-center justify-center px-5 text-center">
       <SearchX className="h-10 w-10 text-muted-foreground" strokeWidth={1.75} />
       <h1 className="mt-3 text-xl font-semibold">Lesson not found</h1>
       <p className="mt-1 text-sm text-muted-foreground">
@@ -55,7 +55,7 @@ function LessonNotFound() {
 
 function LessonError({ error, reset }: { error: Error; reset: () => void }) {
   return (
-    <main className="flex min-h-[60dvh] flex-col items-center justify-center px-5 text-center">
+    <main className="flex min-h-full flex-col items-center justify-center px-5 text-center">
       <TriangleAlert
         className="h-10 w-10 text-destructive"
         strokeWidth={1.75}
@@ -109,7 +109,7 @@ function LessonPlayer() {
 
   if (!unlocked) {
     return (
-      <main className="flex min-h-[60dvh] flex-col items-center justify-center px-5 text-center">
+      <main className="flex min-h-full flex-col items-center justify-center px-5 text-center">
         <Lock className="h-10 w-10 text-muted-foreground" strokeWidth={1.75} />
         <h1 className="mt-3 text-xl font-semibold">Locked</h1>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -160,7 +160,10 @@ function LessonPlayer() {
         : ((stepIndex + 1) / lesson.steps.length) * 100;
 
   return (
-    <main className="flex min-h-[calc(100dvh-8rem)] flex-col px-5 pt-4">
+    // `min-h-full`, not a viewport calc: `.phone-frame` is a fixed 844px on
+    // desktop, so sizing against `100dvh` forced this box ~92px taller than
+    // the frame and pushed the CTA out of view behind dead space.
+    <main className="flex min-h-full flex-col px-5 pb-6 pt-4">
       <div className="mb-6 flex items-center gap-3">
         <button
           type="button"

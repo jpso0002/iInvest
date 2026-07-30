@@ -35,7 +35,11 @@ function AppLayout() {
   }
 
   return (
-    <div className="flex min-h-full w-full flex-col bg-background text-foreground">
+    // `h-full` as well as `min-h-full`: without a definite height here the
+    // chain down to each screen's <main> is height-indeterminate, so any
+    // `min-h-full` on a screen silently resolves to nothing and short screens
+    // can't push a footer CTA to the bottom of the frame.
+    <div className="flex h-full min-h-full w-full flex-col bg-background text-foreground">
       {!storageOk && (
         <div
           role="status"
@@ -45,7 +49,9 @@ function AppLayout() {
         </div>
       )}
       <TopStatsBar />
-      <div className="flex-1">
+      {/* `min-h-0` lets this shrink below its content so the screen inside
+          owns its own scrolling instead of stretching the whole shell. */}
+      <div className="min-h-0 flex-1">
         <Outlet />
       </div>
     </div>
