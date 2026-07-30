@@ -29,3 +29,52 @@ export const MAKER_TAKER = {
 } as const;
 
 export type OrderType = "market" | "limit";
+
+// -------- Resting-order limits --------
+// A limit price is a *request*, never an execution price. Without a band, a
+// limit of pc$0.01 on a pc$144 asset would mint units out of nothing, so the
+// trigger has to stay within touching distance of the real market.
+
+/** A limit buy may sit at most this far below the quoted price. */
+export const MIN_LIMIT_FRACTION = 0.5;
+
+/** And a stop/target at most this far the other side, so orders stay meaningful. */
+export const MAX_TARGET_FRACTION = 4;
+
+/** Per asset. Keeps the 3-second tick loop scanning a short list. */
+export const MAX_OPEN_ORDERS_PER_ASSET = 3;
+
+/**
+ * Is this order eligible to fill at `price`?
+ *
+ * Pure and side-effect free so the rules can be reasoned about (and tested)
+ * without a store, a tick, or a DOM.
+ */
+export const shouldFill = (
+  kind: "limit-buy" | "stop-loss" | "take-profit",
+  trigger: number,
+  price: number,
+): boolean => {
+  switch (kind) {
+    // Buy when the market falls to your price, sell when it falls to your stop.
+    case "limit-buy":
+    case "stop-loss":
+      return price <= trigger;
+    case "take-profit":
+      return price >= trigger;
+  }
+};
+
+/**
+ * The price an eligible order actually fills at.
+ *
+ * A limit buy fills at its trigger: the market reached the price you named, so
+ * that's what you pay. A stop or target fills at the *market* price instead —
+ * if the price gapped straight through your stop you get the worse fill, which
+ * is exactly the lesson a stop-loss is meant to teach.
+ */
+export const fillPrice = (
+  kind: "limit-buy" | "stop-loss" | "take-profit",
+  trigger: number,
+  price: number,
+): number => (kind === "limit-buy" ? trigger : price);

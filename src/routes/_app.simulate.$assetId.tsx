@@ -9,6 +9,7 @@ import { Candlestick } from "@/components/simulate/Candlestick";
 import { OrderBook } from "@/components/simulate/OrderBook";
 import { RangeBar } from "@/components/simulate/RangeBar";
 import { LockedTeaser } from "@/components/simulate/LockedTeaser";
+import { PendingOrders } from "@/components/simulate/PendingOrders";
 import { InvestSheet } from "@/components/simulate/InvestSheet";
 import { SellSheet } from "@/components/simulate/SellSheet";
 import { PurchaseConfirmation } from "@/components/simulate/PurchaseConfirmation";
@@ -169,6 +170,10 @@ function AssetDetailScreen() {
             Invented price on a random walk — not a real quote.
           </p>
         </Card>
+
+        {/* Not tiered: an order you placed must always be visible and
+            cancellable, whatever your lesson count. */}
+        <PendingOrders asset={asset} price={live.price} />
 
         {/* Tier 2 — your position */}
         {unlocked(2) && (

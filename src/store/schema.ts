@@ -5,7 +5,9 @@ import { currentWeekId } from "@/lib/league";
 
 // v5: Trade records gained fee/execPrice/orderType/protections when the
 // simulator started charging fees and applying slippage.
-export const STORAGE_VERSION = 5;
+// v6: portfolio gained `orders` — limit buys and stop/target orders now rest
+// until a tick triggers them instead of resolving at submit time.
+export const STORAGE_VERSION = 6;
 export const STORAGE_KEY = "iinvest.v1";
 
 export type LessonId = string; // e.g. "U1.2"
@@ -67,15 +69,32 @@ export interface Trade {
   /** Transaction fee charged, in pc$. */
   fee: number;
   at: string; // ISO
-  /** Buys only. Sells are always market orders. */
-  orderType?: "market" | "limit";
-  stopLoss?: number;
-  takeProfit?: number;
+  /** How the trade came about. Absent on legacy records. */
+  orderType?: OrderKind | "market";
+}
+
+/** Orders that don't execute at submit time — they wait for a price. */
+export type OrderKind = "limit-buy" | "stop-loss" | "take-profit";
+
+export interface RestingOrder {
+  id: string;
+  assetId: AssetId;
+  kind: OrderKind;
+  /** Price at which the order becomes eligible to fill. */
+  trigger: number;
+  /** `limit-buy`: pc$ to spend (already reserved from cash).
+   *  `stop-loss` / `take-profit`: units to sell. */
+  size: number;
+  placedAt: string; // ISO
 }
 
 export interface PortfolioState {
   holdings: Record<AssetId, Holding>;
   history: Trade[];
+  /** Open orders only — filled and cancelled ones leave the list entirely,
+   * with fills recorded in `history`. Keeps the tick loop scanning a short
+   * array rather than a growing log. */
+  orders: RestingOrder[];
 }
 
 export interface MarketTick {
@@ -118,6 +137,7 @@ export const initialUser = (): UserState => ({
 export const initialPortfolio = (): PortfolioState => ({
   holdings: {},
   history: [],
+  orders: [],
 });
 
 export const initialMarket = (): MarketState => ({

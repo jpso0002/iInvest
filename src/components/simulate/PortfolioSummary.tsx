@@ -21,7 +21,13 @@ export function PortfolioSummary() {
   const total = cash + holdingsValue;
   const pnlPositive = unrealized >= 0;
 
-  const chartData = series.length > 1 ? series : [{ at: 0, total }, { at: 1, total }];
+  const chartData =
+    series.length > 1
+      ? series
+      : [
+          { at: 0, total },
+          { at: 1, total },
+        ];
 
   return (
     <section className="rounded-3xl border border-border bg-card p-5 shadow-sm">
@@ -44,7 +50,10 @@ export function PortfolioSummary() {
         </div>
         <div className="h-16 w-28">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData} margin={{ top: 4, right: 0, left: 0, bottom: 4 }}>
+            <LineChart
+              data={chartData}
+              margin={{ top: 4, right: 0, left: 0, bottom: 4 }}
+            >
               <YAxis hide domain={["dataMin", "dataMax"]} />
               <Line
                 type="monotone"
@@ -63,7 +72,10 @@ export function PortfolioSummary() {
           Cash <span className="tabular text-foreground">{pcMoney(cash)}</span>
         </span>
         <span>
-          Holdings <span className="tabular text-foreground">{pcMoney(holdingsValue)}</span>
+          Holdings{" "}
+          <span className="tabular text-foreground">
+            {pcMoney(holdingsValue)}
+          </span>
         </span>
       </div>
     </section>

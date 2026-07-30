@@ -4,6 +4,7 @@ import { TopStatsBar } from "@/components/layout/TopStatsBar";
 import { useAppStore } from "@/store/useAppStore";
 import { isStorageAvailable } from "@/lib/storage-status";
 import { markSessionStartedIfNewDay } from "@/lib/analytics";
+import { useOrderFillToasts } from "@/hooks/use-order-fill-toasts";
 
 export const Route = createFileRoute("/_app")({
   component: AppLayout,
@@ -13,6 +14,7 @@ function AppLayout() {
   const [hydrated, setHydrated] = useState(false);
   const [storageOk, setStorageOk] = useState(true);
   const onboarded = useAppStore((s) => s.user.onboarded);
+  useOrderFillToasts();
 
   useEffect(() => {
     setHydrated(true);

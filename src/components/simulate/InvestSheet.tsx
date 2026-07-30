@@ -51,6 +51,7 @@ export function InvestSheet({
   const completed = useAppStore((s) => s.user.completedLessons);
   const holding = useAppStore((s) => s.portfolio.holdings[asset.id]);
   const buyWithAmount = useAppStore((s) => s.buyWithAmount);
+  const placeOrder = useAppStore((s) => s.placeOrder);
 
   const completedCount = completed.length;
   const unit = unitForCompleted(completed);
@@ -80,6 +81,7 @@ export function InvestSheet({
   }, [open, asset.id]);
 
   const effectiveOrderType: OrderType = unlocked(4) ? orderType : "market";
+  const isLimit = effectiveOrderType === "limit";
   const limit = Number(limitPrice);
   const execPrice =
     effectiveOrderType === "limit" && Number.isFinite(limit) && limit > 0
@@ -128,9 +130,21 @@ export function InvestSheet({
   };
 
   const onConfirm = () => {
+    // A limit order buys nothing today — it rests until the market comes to it.
+    if (effectiveOrderType === "limit") {
+      const result = placeOrder(asset.id, "limit-buy", limit, amount);
+      if (!result.ok) {
+        toast.error(result.reason ?? "Couldn't place that order");
+        return;
+      }
+      toast.success(
+        `Limit order placed — ${pcMoney(amount)} of ${asset.id} at ${pcMoney(limit, { cents: true })}`,
+      );
+      onOpenChange(false);
+      return;
+    }
+
     const result = buyWithAmount(asset.id, amount, {
-      orderType: effectiveOrderType,
-      limitPrice: effectiveOrderType === "limit" ? limit : undefined,
       stopLoss: unlocked(5) && stopLoss ? Number(stopLoss) : undefined,
       takeProfit: unlocked(5) && takeProfit ? Number(takeProfit) : undefined,
     });
@@ -138,6 +152,9 @@ export function InvestSheet({
       toast.error(result.reason ?? "Purchase failed");
       return;
     }
+    // The shares are bought; a rejected stop is worth saying out loud rather
+    // than swallowing, but it doesn't undo the trade.
+    for (const w of result.warnings ?? []) toast.warning(w);
     track({
       type: "trade_executed",
       assetId: asset.id,
@@ -254,7 +271,7 @@ export function InvestSheet({
           {unlocked(3) && amount > 0 && (
             <div className="rounded-2xl border border-border p-4 text-sm">
               <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Preview after purchase
+                {isLimit ? "If this order fills" : "Preview after purchase"}
               </p>
               <Row label="Units bought" value={fmtShares(preview.units)} />
               <Row
@@ -374,13 +391,21 @@ export function InvestSheet({
             </p>
           )}
 
+          {isLimit && (
+            <p className="text-center text-xs text-muted-foreground">
+              This buys nothing now. {pcMoney(amount)} is set aside until{" "}
+              {asset.id} falls to {pcMoney(limit, { cents: true })} — cancel any
+              time to get it back.
+            </p>
+          )}
+
           <Button
             type="button"
             className="w-full rounded-full py-6 text-base font-semibold"
             onClick={onConfirm}
             disabled={disabled}
           >
-            Confirm investment
+            {isLimit ? "Place limit order" : "Confirm investment"}
           </Button>
         </div>
       </SheetContent>

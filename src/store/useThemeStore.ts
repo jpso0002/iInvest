@@ -20,7 +20,8 @@ export const useThemeStore = create<ThemeState>()(
       name: "iinvest.theme",
       storage: createJSONStorage(() => {
         try {
-          if (typeof window === "undefined" || !window.localStorage) throw new Error();
+          if (typeof window === "undefined" || !window.localStorage)
+            throw new Error();
           return window.localStorage;
         } catch {
           const map = new Map<string, string>();

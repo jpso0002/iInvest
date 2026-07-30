@@ -13,6 +13,8 @@ import {
   type Holding,
   type LessonId,
   type LessonProgress,
+  type OrderKind,
+  type RestingOrder,
   type UnitNumber,
   type Trade,
   type UserState,
@@ -26,8 +28,12 @@ import { currentWeekId } from "@/lib/league";
 import {
   buyExecutionPrice,
   feeFor,
+  fillPrice,
+  shouldFill,
   FEE_RATE,
-  type OrderType,
+  MAX_OPEN_ORDERS_PER_ASSET,
+  MAX_TARGET_FRACTION,
+  MIN_LIMIT_FRACTION,
 } from "@/lib/trading";
 import { pcMoney } from "@/lib/format";
 
@@ -83,13 +89,25 @@ export interface TradeResult {
   ok: boolean;
   reason?: string;
   execution?: BuyExecution;
+  /** Non-fatal problems — e.g. a protection order that couldn't be placed. */
+  warnings?: string[];
 }
 
 export interface BuyOptions {
-  orderType?: OrderType;
-  limitPrice?: number;
+  /** Placed as resting orders against the position this buy opens. A buy that
+   * fills but whose protections are rejected still succeeds — the rejections
+   * come back in `warnings` rather than unwinding the trade. */
   stopLoss?: number;
   takeProfit?: number;
+}
+
+/** A resting order that fired on a tick, for the toast queue. */
+export interface OrderFill {
+  id: string;
+  assetId: AssetId;
+  kind: OrderKind;
+  units: number;
+  price: number;
 }
 
 export interface AppActions {
@@ -108,6 +126,17 @@ export interface AppActions {
     amount: number,
     opts?: BuyOptions,
   ) => TradeResult;
+  /** Place an order that waits for a price. Cash for a limit buy is reserved
+   * immediately so it can't be spent twice. */
+  placeOrder: (
+    assetId: AssetId,
+    kind: OrderKind,
+    trigger: number,
+    size: number,
+  ) => TradeResult;
+  /** Cancel an open order, refunding any reserved cash. */
+  cancelOrder: (orderId: string) => void;
+  consumeOrderFills: () => OrderFill[];
   resetAll: () => void;
   consumeLessonCompleteAnimation: () => void;
   rolloverWeekIfNeeded: () => void;
@@ -123,6 +152,8 @@ export interface PendingLessonComplete {
 export interface TransientState {
   /** Set by every real lesson completion; consumed once `/lessons` has played its reveal animation. */
   pendingLessonComplete: PendingLessonComplete | null;
+  /** Orders that fired on the last tick, waiting to be toasted. */
+  pendingOrderFills: OrderFill[];
 }
 
 export type AppStore = AppState & TransientState & AppActions;
@@ -143,6 +174,7 @@ export const useAppStore = create<AppStore>()(
     (set, get) => ({
       ...initialAppState(),
       pendingLessonComplete: null,
+      pendingOrderFills: [],
 
       setUser: (patch) => set((s) => ({ user: { ...s.user, ...patch } })),
 
@@ -235,14 +267,126 @@ export const useAppStore = create<AppStore>()(
             );
             newAssets[a.id] = { last: { price, at: now }, seed };
           }
-          let total = s.user.cash;
-          for (const [id, h] of Object.entries(s.portfolio.holdings)) {
+
+          // --- Resting orders, evaluated against the prices just computed ---
+          // Runs before portfolio value is totalled so a fill is reflected in
+          // the same tick's equity point rather than lagging one behind.
+          const holdings = { ...s.portfolio.holdings };
+          const stillOpen: RestingOrder[] = [];
+          const fills: OrderFill[] = [];
+          const trades: Trade[] = [];
+          let cash = s.user.cash;
+          const fractional = canUseFractional(
+            unitForCompleted(s.user.completedLessons),
+          );
+
+          for (const order of s.portfolio.orders ?? []) {
+            const price = newAssets[order.assetId]?.last.price;
+            if (
+              price == null ||
+              !shouldFill(order.kind, order.trigger, price)
+            ) {
+              stillOpen.push(order);
+              continue;
+            }
+            const exec = fillPrice(order.kind, order.trigger, price);
+            const held = holdings[order.assetId];
+
+            if (order.kind === "limit-buy") {
+              // `order.size` was reserved from cash at placement, so nothing is
+              // debited here — only the unspent change is handed back.
+              const fee = feeFor(order.size);
+              const raw = (order.size - fee) / exec;
+              const units = fractional ? raw : Math.floor(raw);
+              if (units <= 0) {
+                cash += order.size; // can't fill meaningfully — refund it all
+                continue;
+              }
+              const prevUnits = held?.units ?? 0;
+              const prevAvg = held?.avgCost ?? 0;
+              const newUnits = prevUnits + units;
+              holdings[order.assetId] = {
+                units: newUnits,
+                avgCost: (prevUnits * prevAvg + units * exec) / newUnits,
+              };
+              cash += order.size - (units * exec + fee); // change
+              trades.push({
+                id: genId(),
+                assetId: order.assetId,
+                side: "buy",
+                units,
+                price: exec,
+                fee,
+                at: new Date(now).toISOString(),
+                orderType: order.kind,
+              });
+              fills.push({
+                id: order.id,
+                assetId: order.assetId,
+                kind: order.kind,
+                units,
+                price: exec,
+              });
+              continue;
+            }
+
+            // Stop-loss / take-profit. Clamp to what's actually still held —
+            // the position may have been sold down by hand since placement.
+            const units = Math.min(order.size, held?.units ?? 0);
+            if (units <= 0) continue; // position gone; drop the order
+            const gross = units * exec;
+            const fee = feeFor(gross);
+            cash += gross - fee;
+            const remaining = (held?.units ?? 0) - units;
+            if (remaining <= 1e-7) {
+              delete holdings[order.assetId];
+            } else {
+              holdings[order.assetId] = {
+                units: remaining,
+                avgCost: held!.avgCost,
+              };
+            }
+            trades.push({
+              id: genId(),
+              assetId: order.assetId,
+              side: "sell",
+              units,
+              price: exec,
+              fee,
+              at: new Date(now).toISOString(),
+              orderType: order.kind,
+            });
+            fills.push({
+              id: order.id,
+              assetId: order.assetId,
+              kind: order.kind,
+              units,
+              price: exec,
+            });
+          }
+
+          let total = cash;
+          for (const [id, h] of Object.entries(holdings)) {
             const price = newAssets[id]?.last.price ?? 0;
             total += h.units * price;
           }
           const prev = s.market.sessionSeries ?? [];
           const sessionSeries = [...prev, { at: now, total }].slice(-120);
-          return { market: { assets: newAssets, sessionSeries } };
+
+          const market = { assets: newAssets, sessionSeries };
+          if (fills.length === 0) return { market };
+
+          return {
+            market,
+            user: { ...s.user, cash },
+            portfolio: {
+              ...s.portfolio,
+              holdings,
+              orders: stillOpen,
+              history: [...trades, ...s.portfolio.history].slice(0, 200),
+            },
+            pendingOrderFills: [...s.pendingOrderFills, ...fills],
+          };
         }),
 
       sell: (assetId, unitsRaw) => {
@@ -296,6 +440,7 @@ export const useAppStore = create<AppStore>()(
               streak: bumpStreak(s.user.streak),
             },
             portfolio: {
+              ...s.portfolio,
               holdings,
               history: [trade, ...s.portfolio.history].slice(0, 200),
             },
@@ -318,18 +463,12 @@ export const useAppStore = create<AppStore>()(
         if (amount > state.user.cash)
           return { ok: false, reason: "Insufficient cash" };
 
+        // Market only. A limit price is a *request* to trade later, never an
+        // execution price — routing one through here is what let a limit of
+        // pc$0.01 mint 9,950 units for pc$100. Limit buys go to `placeOrder`.
         const quoted =
           state.market.assets[assetId]?.last.price ?? def.startPrice;
-        const orderType: OrderType = opts?.orderType ?? "market";
-        const limit = opts?.limitPrice;
-        // A limit order fills at the price you named; a market order takes
-        // whatever the book gives you, which is never better than quoted.
-        const execPrice =
-          orderType === "limit" &&
-          Number.isFinite(limit) &&
-          (limit as number) > 0
-            ? (limit as number)
-            : buyExecutionPrice(quoted);
+        const execPrice = buyExecutionPrice(quoted);
 
         const fee = feeFor(amount);
         const invested = amount - fee;
@@ -368,9 +507,7 @@ export const useAppStore = create<AppStore>()(
             price: execPrice,
             fee,
             at: new Date().toISOString(),
-            orderType,
-            ...(opts?.stopLoss ? { stopLoss: opts.stopLoss } : {}),
-            ...(opts?.takeProfit ? { takeProfit: opts.takeProfit } : {}),
+            orderType: "market",
           };
           return {
             user: {
@@ -379,6 +516,7 @@ export const useAppStore = create<AppStore>()(
               streak: bumpStreak(s.user.streak),
             },
             portfolio: {
+              ...s.portfolio,
               holdings: {
                 ...s.portfolio.holdings,
                 [assetId]: { units: newTotalUnits, avgCost: newAvgCost },
@@ -387,6 +525,18 @@ export const useAppStore = create<AppStore>()(
             },
           };
         });
+
+        // Protections attach to the position the buy just opened. A rejected
+        // protection is a warning, not a failure — the shares are already
+        // bought, and unwinding a good trade over a bad stop price is worse.
+        const warnings: string[] = [];
+        const attach = (kind: OrderKind, trigger: number | undefined) => {
+          if (!trigger) return;
+          const res = get().placeOrder(assetId, kind, trigger, newTotalUnits);
+          if (!res.ok && res.reason) warnings.push(res.reason);
+        };
+        attach("stop-loss", opts?.stopLoss);
+        attach("take-profit", opts?.takeProfit);
 
         return {
           ok: true,
@@ -399,11 +549,142 @@ export const useAppStore = create<AppStore>()(
             newTotalUnits,
             newAvgCost,
           },
+          ...(warnings.length ? { warnings } : {}),
         };
       },
 
+      placeOrder: (assetId, kind, triggerRaw, sizeRaw) => {
+        const state = get();
+        const def = assets.find((a) => a.id === assetId);
+        if (!def) return { ok: false, reason: "Unknown asset" };
+        const unit = unitForCompleted(state.user.completedLessons);
+        if (def.unlockAfterUnit > unit) return { ok: false, reason: "Locked" };
+
+        const trigger = Number(triggerRaw);
+        const size = Number(sizeRaw);
+        if (!Number.isFinite(trigger) || trigger <= 0) {
+          return { ok: false, reason: "Enter a trigger price above 0" };
+        }
+        if (!Number.isFinite(size) || size <= 0) {
+          return { ok: false, reason: "Nothing to order" };
+        }
+
+        const open = state.portfolio.orders ?? [];
+        if (
+          open.filter((o) => o.assetId === assetId).length >=
+          MAX_OPEN_ORDERS_PER_ASSET
+        ) {
+          return {
+            ok: false,
+            reason: `You already have ${MAX_OPEN_ORDERS_PER_ASSET} open orders on ${assetId}`,
+          };
+        }
+
+        const quoted =
+          state.market.assets[assetId]?.last.price ?? def.startPrice;
+
+        if (kind === "limit-buy") {
+          // Must be below market — at or above it, it's just a market order —
+          // and within a band, so the trigger can't be a fantasy price.
+          if (trigger >= quoted) {
+            return {
+              ok: false,
+              reason: `A limit buy sits below the market. ${assetId} is ${pcMoney(quoted)} — buy now instead.`,
+            };
+          }
+          if (trigger < quoted * MIN_LIMIT_FRACTION) {
+            return {
+              ok: false,
+              reason: `Too far below market. The lowest limit for ${assetId} is ${pcMoney(quoted * MIN_LIMIT_FRACTION, { cents: true })}.`,
+            };
+          }
+          if (size > state.user.cash) {
+            return { ok: false, reason: "Insufficient cash to reserve" };
+          }
+        } else {
+          const held = state.portfolio.holdings[assetId]?.units ?? 0;
+          if (held <= 0) {
+            return {
+              ok: false,
+              reason: `You don't own any ${assetId} to protect`,
+            };
+          }
+          if (kind === "stop-loss" && trigger >= quoted) {
+            return {
+              ok: false,
+              reason: `A stop-loss sits below the market (${pcMoney(quoted)}).`,
+            };
+          }
+          if (kind === "take-profit" && trigger <= quoted) {
+            return {
+              ok: false,
+              reason: `A take-profit sits above the market (${pcMoney(quoted)}).`,
+            };
+          }
+          if (trigger > quoted * MAX_TARGET_FRACTION) {
+            return {
+              ok: false,
+              reason: "That target is unrealistically far away",
+            };
+          }
+        }
+
+        const order: RestingOrder = {
+          id: genId(),
+          assetId,
+          kind,
+          trigger,
+          size,
+          placedAt: new Date().toISOString(),
+        };
+
+        set((s) => ({
+          // Reserving the cash up front is what stops one balance funding two
+          // limit buys; `cancelOrder` refunds it.
+          user:
+            kind === "limit-buy"
+              ? { ...s.user, cash: s.user.cash - size }
+              : s.user,
+          portfolio: {
+            ...s.portfolio,
+            orders: [...(s.portfolio.orders ?? []), order],
+          },
+        }));
+        return { ok: true };
+      },
+
+      cancelOrder: (orderId) =>
+        set((s) => {
+          const order = (s.portfolio.orders ?? []).find(
+            (o) => o.id === orderId,
+          );
+          if (!order) return {};
+          return {
+            user:
+              order.kind === "limit-buy"
+                ? { ...s.user, cash: s.user.cash + order.size }
+                : s.user,
+            portfolio: {
+              ...s.portfolio,
+              orders: (s.portfolio.orders ?? []).filter(
+                (o) => o.id !== orderId,
+              ),
+            },
+          };
+        }),
+
+      consumeOrderFills: () => {
+        const fills = get().pendingOrderFills;
+        if (fills.length) set({ pendingOrderFills: [] });
+        return fills;
+      },
+
       resetAll: () =>
-        set(() => ({ ...initialAppState(), pendingLessonComplete: null })),
+        set(() => ({
+          ...initialAppState(),
+          pendingLessonComplete: null,
+          pendingOrderFills: [],
+        })),
 
       consumeLessonCompleteAnimation: () =>
         set({ pendingLessonComplete: null }),

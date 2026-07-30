@@ -17,6 +17,7 @@ import PhoneFrame from "../components/PhoneFrame";
 import Splash from "../components/Splash";
 import { TabBar } from "../components/layout/TabBar";
 import { useThemeStore } from "../store/useThemeStore";
+import { Toaster } from "../components/ui/sonner";
 
 const TAB_ROUTES = ["/lessons", "/simulate", "/news", "/league", "/profile"];
 
@@ -166,6 +167,9 @@ function RootComponent() {
           {showSplash && <Splash onDone={handleSplashDone} />}
           {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
           <Outlet />
+          {/* Without this every toast.*() call in the app is a no-op — trade
+              confirmations, order rejections and fill alerts all vanish. */}
+          <Toaster position="top-center" richColors closeButton />
         </PhoneFrame>
       )}
     </QueryClientProvider>
