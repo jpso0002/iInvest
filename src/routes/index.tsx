@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { TrendingUp } from "lucide-react";
 import { useAppStore } from "@/store/useAppStore";
+import { applyDemoState, wantsDemo } from "@/lib/demo";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -44,8 +45,15 @@ function Index() {
 
   useEffect(() => setHydrated(true), []);
 
+  // `?demo` re-seeds a pitch-ready account and reloads. Checked before the
+  // onboarded redirect below so the link works whatever state the phone is
+  // already in — relaunching is how you reset between demos.
   useEffect(() => {
-    if (hydrated && onboarded) {
+    if (hydrated && wantsDemo()) applyDemoState();
+  }, [hydrated]);
+
+  useEffect(() => {
+    if (hydrated && onboarded && !wantsDemo()) {
       navigate({ to: "/lessons", replace: true });
     }
   }, [hydrated, onboarded, navigate]);

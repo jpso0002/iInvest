@@ -89,7 +89,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     head: () => ({
       meta: [
         { charSet: "utf-8" },
-        { name: "viewport", content: "width=device-width, initial-scale=1" },
+        {
+          name: "viewport",
+          // `viewport-fit=cover` lets the app paint under the notch and home
+          // indicator once it's launched from the home screen.
+          content:
+            "width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no",
+        },
         { title: "iInvest — Learn to invest, one bite at a time" },
         {
           name: "description",
@@ -99,10 +105,23 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         { property: "og:site_name", content: "iInvest" },
         { property: "og:type", content: "website" },
         { name: "twitter:card", content: "summary" },
+        // Installable-app hints. iOS Safari still ignores most of the web
+        // manifest, so the apple-* tags below are what actually make
+        // "Add to Home Screen" launch full-screen without browser chrome.
+        { name: "theme-color", content: "#0077B3" },
+        { name: "mobile-web-app-capable", content: "yes" },
+        { name: "apple-mobile-web-app-capable", content: "yes" },
+        { name: "apple-mobile-web-app-title", content: "iInvest" },
+        {
+          name: "apple-mobile-web-app-status-bar-style",
+          content: "black-translucent",
+        },
       ],
       links: [
         { rel: "stylesheet", href: appCss },
         { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+        { rel: "manifest", href: "/manifest.webmanifest" },
+        { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
       ],
     }),
     shellComponent: RootShell,
