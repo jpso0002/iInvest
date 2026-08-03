@@ -342,3 +342,39 @@
     transform: translateX(-50%);
   }
 }
+
+/* Slice: coach card entrance. Slides up from the bottom edge so it reads as
+   the coach leaning in, not a modal appearing. */
+@keyframes coach-in {
+  from {
+    transform: translateY(14px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Slice: a newly unlocked section flashing into place. */
+@keyframes unlock-reveal {
+  0% {
+    transform: scale(0.96);
+    opacity: 0;
+    box-shadow: 0 0 0 0 var(--reward-gold);
+  }
+  60% {
+    transform: scale(1.01);
+    opacity: 1;
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--reward-gold) 35%, transparent);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+.animate-unlock-reveal {
+  animation: unlock-reveal 700ms ease-out both;
+}

@@ -14,6 +14,7 @@ import { Route as AppRouteImport } from './routes/_app'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SliceRouteImport } from './routes/slice'
 import { Route as AppLeagueRouteImport } from './routes/_app.league'
 import { Route as AppProfileRouteImport } from './routes/_app.profile'
 import { Route as AppLessonsIndexRouteImport } from './routes/_app.lessons.index'
@@ -46,6 +47,11 @@ const SignupRoute = SignupRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SliceRoute = SliceRouteImport.update({
+  id: '/slice',
+  path: '/slice',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppLeagueRoute = AppLeagueRouteImport.update({
@@ -99,6 +105,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/slice': typeof SliceRoute
   '/league': typeof AppLeagueRoute
   '/profile': typeof AppProfileRoute
   '/lessons/$lessonId': typeof AppLessonsLessonIdRoute
@@ -114,6 +121,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/slice': typeof SliceRoute
   '/league': typeof AppLeagueRoute
   '/profile': typeof AppProfileRoute
   '/lessons/$lessonId': typeof AppLessonsLessonIdRoute
@@ -131,6 +139,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/slice': typeof SliceRoute
   '/_app/league': typeof AppLeagueRoute
   '/_app/profile': typeof AppProfileRoute
   '/_app/lessons/$lessonId': typeof AppLessonsLessonIdRoute
@@ -148,6 +157,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/sitemap.xml'
+    | '/slice'
     | '/league'
     | '/profile'
     | '/lessons/$lessonId'
@@ -163,6 +173,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/sitemap.xml'
+    | '/slice'
     | '/league'
     | '/profile'
     | '/lessons/$lessonId'
@@ -179,6 +190,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/sitemap.xml'
+    | '/slice'
     | '/_app/league'
     | '/_app/profile'
     | '/_app/lessons/$lessonId'
@@ -196,6 +208,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  SliceRoute: typeof SliceRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -233,6 +246,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/slice': {
+      id: '/slice'
+      path: '/slice'
+      fullPath: '/slice'
+      preLoaderRoute: typeof SliceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/league': {
@@ -333,6 +353,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  SliceRoute: SliceRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
