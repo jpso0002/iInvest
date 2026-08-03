@@ -36,8 +36,10 @@ export function QuestionMCQ({ step, onContinue }: Props) {
                 "w-full rounded-2xl border-2 px-4 py-4 text-left text-base font-medium transition-all",
                 !checked && isSel && "border-primary bg-primary/5",
                 !checked && !isSel && "border-border bg-card hover:bg-accent",
-                showCorrect && "border-success bg-success/10 text-success-foreground",
-                showWrong && "border-destructive bg-destructive/10",
+                showCorrect &&
+                  "border-success bg-success-surface text-success-text",
+                showWrong &&
+                  "border-destructive bg-destructive-surface text-destructive-text",
                 checked && "cursor-default",
               ]
                 .filter(Boolean)
@@ -53,7 +55,9 @@ export function QuestionMCQ({ step, onContinue }: Props) {
         <div
           className={[
             "mt-4 rounded-2xl px-4 py-3 text-sm",
-            isCorrect ? "bg-success/10 text-success-foreground" : "bg-destructive/10",
+            isCorrect
+              ? "bg-success-surface text-success-text"
+              : "bg-destructive-surface text-destructive-text",
           ].join(" ")}
           role="status"
         >

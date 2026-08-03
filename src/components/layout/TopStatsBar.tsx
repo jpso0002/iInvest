@@ -8,9 +8,19 @@ export function TopStatsBar() {
 
   return (
     <header className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-background/80 px-5 py-3 backdrop-blur-sm">
-      <Stat icon={Flame} tone="accent" label="Streak" value={user.streak.count} />
-      <Stat icon={Star} tone="primary" label="XP" value={user.xp} />
-      <Stat icon={Wallet} tone="practice" label="Cash" value={pcMoney(user.cash, { whole: true })} />
+      <Stat
+        icon={Flame}
+        tone="streak"
+        label="Streak"
+        value={user.streak.count}
+      />
+      <Stat icon={Star} tone="reward" label="XP" value={user.xp} />
+      <Stat
+        icon={Wallet}
+        tone="practice"
+        label="Cash"
+        value={pcMoney(user.cash, { whole: true })}
+      />
     </header>
   );
 }

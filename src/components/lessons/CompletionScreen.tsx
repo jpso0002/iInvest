@@ -35,12 +35,17 @@ export function CompletionScreen({
             strokeWidth={1.75}
           />
         </div>
-        <h2 className="mt-4 text-3xl font-bold tracking-tight">Lesson complete!</h2>
+        <h2 className="mt-4 text-3xl font-bold tracking-tight">
+          Lesson complete!
+        </h2>
         <p className="mt-2 text-sm text-muted-foreground">{lessonTitle}</p>
 
         <div className="mt-8 grid grid-cols-2 gap-3">
           <RewardCard label="XP earned" value={`+${result.xpGained}`} />
-          <RewardCard label="Practice cash" value={`+${pcMoney(result.cashGained)}`} />
+          <RewardCard
+            label="Practice cash"
+            value={`+${pcMoney(result.cashGained)}`}
+          />
         </div>
 
         {!result.unitUp && (
@@ -58,7 +63,9 @@ export function CompletionScreen({
             <LevelUpCelebration newUnit={result.newUnit} />
             <div className="mt-3 rounded-2xl bg-primary/10 px-4 py-3 text-sm text-primary">
               Bonus for leveling up:{" "}
-              <span className="font-semibold tabular-nums">+{pcMoney(result.bonus)}</span>
+              <span className="font-semibold tabular-nums">
+                +{pcMoney(result.bonus)}
+              </span>
             </div>
           </>
         )}
@@ -96,8 +103,12 @@ export function CompletionScreen({
 function RewardCard({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-2xl border border-border bg-card px-4 py-3 text-left">
-      <div className="text-xs uppercase tracking-wide text-muted-foreground">{label}</div>
-      <div className="mt-1 text-xl font-bold tabular-nums text-foreground">{value}</div>
+      <div className="text-xs uppercase tracking-wide text-muted-foreground">
+        {label}
+      </div>
+      <div className="mt-1 text-xl font-bold tabular-nums text-foreground">
+        {value}
+      </div>
     </div>
   );
 }

@@ -16,8 +16,8 @@
 
 .mascot__bubble {
   position: relative;
-  background: var(--color-white, #fff);
-  border: 1.5px solid var(--color-border, #e5e7eb);
+  background: var(--color-white);
+  border: 1.5px solid var(--color-border);
   border-radius: 16px;
   padding: 10px 14px;
   flex: 1;
@@ -25,15 +25,15 @@
 }
 
 .mascot__bubble::before {
-  content: '';
+  content: "";
   position: absolute;
   left: -8px;
   bottom: 16px;
   width: 14px;
   height: 14px;
-  background: var(--color-white, #fff);
-  border-left: 1.5px solid var(--color-border, #e5e7eb);
-  border-bottom: 1.5px solid var(--color-border, #e5e7eb);
+  background: var(--color-white);
+  border-left: 1.5px solid var(--color-border);
+  border-bottom: 1.5px solid var(--color-border);
   transform: rotate(45deg);
 }
 
@@ -48,7 +48,7 @@
 .mascot__name {
   font-size: 12px;
   font-weight: 700;
-  color: var(--color-indigo, #4f46e5);
+  color: var(--color-indigo);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -58,20 +58,20 @@
   border: none;
   font-size: 20px;
   line-height: 1;
-  color: var(--color-text-muted, #64748b);
+  color: var(--color-text-muted);
   cursor: pointer;
   padding: 0 4px;
 }
 
 .mascot__close:hover {
-  color: var(--color-text, #0f172a);
+  color: var(--color-text);
 }
 
 .mascot__tip {
   margin: 0;
   font-size: 14px;
   line-height: 1.4;
-  color: var(--color-text, #0f172a);
+  color: var(--color-text);
 }
 
 .mascot--floating {

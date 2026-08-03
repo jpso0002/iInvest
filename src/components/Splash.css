@@ -9,7 +9,11 @@
   align-items: center;
   justify-content: center;
   gap: 12px;
-  background: linear-gradient(180deg, #5B4FE8 0%, #4338CA 100%);
+  background: linear-gradient(
+    180deg,
+    var(--brand-purple) 0%,
+    var(--brand-purple-dark) 100%
+  );
   animation: splashFadeIn 0.3s ease;
 }
 
@@ -38,35 +42,64 @@
   font-size: 28px;
   font-weight: 800;
   letter-spacing: -0.5px;
-  color: #FFFFFF;
+  color: var(--text-on-color);
   opacity: 0;
   animation: splashRise 0.6s ease forwards 0.5s;
 }
 
 @keyframes splashFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes splashFadeOut {
-  to { opacity: 0; transform: scale(1.08); visibility: hidden; }
+  to {
+    opacity: 0;
+    transform: scale(1.08);
+    visibility: hidden;
+  }
 }
 
 @keyframes splashPop {
-  0% { transform: scale(0.6); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 @keyframes splashDraw {
-  to { stroke-dashoffset: 0; }
+  to {
+    stroke-dashoffset: 0;
+  }
 }
 
 @keyframes splashDotIn {
-  0% { transform: scale(0); opacity: 0; transform-origin: 100px 52px; }
-  100% { transform: scale(1); opacity: 1; }
+  0% {
+    transform: scale(0);
+    opacity: 0;
+    transform-origin: 100px 52px;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 @keyframes splashRise {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

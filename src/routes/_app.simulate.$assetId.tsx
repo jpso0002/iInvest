@@ -326,7 +326,7 @@ function AssetDetailScreen() {
             )}
             <div className="mt-3 flex gap-2 rounded-xl bg-muted/60 p-3 text-xs text-muted-foreground">
               <Info
-                className="h-4 w-4 flex-none text-primary"
+                className="h-4 w-4 flex-none text-info-text"
                 strokeWidth={2}
               />
               <span>
@@ -374,17 +374,17 @@ function AssetDetailScreen() {
         {unlocked(9) && (
           <Card>
             <SectionTitle>Trading activity</SectionTitle>
-            <div className="h-2 overflow-hidden rounded-full bg-destructive/30">
+            <div className="h-2 overflow-hidden rounded-full bg-market-down/30">
               <div
-                className="h-full rounded-full bg-primary"
+                className="h-full rounded-full bg-market-up"
                 style={{ width: `${detail.buySellRatio.buyPct}%` }}
               />
             </div>
             <div className="mt-1.5 flex justify-between text-xs">
-              <span className="font-medium text-primary">
+              <span className="font-medium text-market-up-text">
                 {detail.buySellRatio.buyPct}% buyers
               </span>
-              <span className="font-medium text-destructive">
+              <span className="font-medium text-market-down-text">
                 {detail.buySellRatio.sellPct}% sellers
               </span>
             </div>
@@ -536,7 +536,11 @@ function Stat({
   tone?: "up" | "down";
 }) {
   const toneClass =
-    tone === "up" ? "text-primary" : tone === "down" ? "text-destructive" : "";
+    tone === "up"
+      ? "text-market-up-text"
+      : tone === "down"
+        ? "text-market-down-text"
+        : "";
   return (
     <div>
       <p className="text-[11px] text-muted-foreground">{label}</p>

@@ -45,22 +45,22 @@ import {
   IconBriefcase,
   IconShoppingCart,
   IconArrowRight,
-} from '@tabler/icons-react';
+} from "@tabler/icons-react";
 
 const ICONS = {
   flame: IconFlame,
   coins: IconCoins,
   coin: IconCoin,
   heart: IconHeart,
-  'heart-filled': IconHeartFilled,
+  "heart-filled": IconHeartFilled,
   lock: IconLock,
-  'trending-up': IconTrendingUp,
-  'trending-down': IconTrendingDown,
-  'chevron-right': IconChevronRight,
-  'chevron-left': IconChevronLeft,
-  'chevron-down': IconChevronDown,
+  "trending-up": IconTrendingUp,
+  "trending-down": IconTrendingDown,
+  "chevron-right": IconChevronRight,
+  "chevron-left": IconChevronLeft,
+  "chevron-down": IconChevronDown,
   check: IconCheck,
-  'circle-check': IconCircleCheckFilled,
+  "circle-check": IconCircleCheckFilled,
   close: IconX,
   back: IconArrowLeft,
   settings: IconSettings,
@@ -68,21 +68,21 @@ const ICONS = {
   home: IconHome2,
   wallet: IconWallet,
   trophy: IconTrophy,
-  'chart-line': IconChartLine,
-  'chart-candle': IconChartCandle,
-  'chart-pie': IconChartPie,
+  "chart-line": IconChartLine,
+  "chart-candle": IconChartCandle,
+  "chart-pie": IconChartPie,
   info: IconInfoCircle,
   star: IconStar,
-  'building-bank': IconBuildingBank,
-  'piggy-bank': IconPigMoney,
-  'report-analytics': IconReportAnalytics,
-  'stack-2': IconStack2,
+  "building-bank": IconBuildingBank,
+  "piggy-bank": IconPigMoney,
+  "report-analytics": IconReportAnalytics,
+  "stack-2": IconStack2,
   shield: IconShieldCheck,
-  'arrow-up-right': IconArrowUpRight,
-  'arrow-down-right': IconArrowDownRight,
+  "arrow-up-right": IconArrowUpRight,
+  "arrow-down-right": IconArrowDownRight,
   plus: IconPlus,
   receipt: IconReceipt,
-  'list-details': IconListDetails,
+  "list-details": IconListDetails,
   target: IconTargetArrow,
   sparkles: IconSparkles,
   rocket: IconRocket,
@@ -92,13 +92,21 @@ const ICONS = {
   scale: IconScale,
   news: IconNews,
   briefcase: IconBriefcase,
-  'shopping-cart': IconShoppingCart,
-  'arrow-right': IconArrowRight,
-  'shield-check': IconShieldCheck,
+  "shopping-cart": IconShoppingCart,
+  "arrow-right": IconArrowRight,
+  "shield-check": IconShieldCheck,
 };
 
-export default function Icon({ name, size = 20, color, stroke = 1.9, className }) {
+export default function Icon({
+  name,
+  size = 20,
+  color,
+  stroke = 1.9,
+  className,
+}) {
   const Cmp = ICONS[name];
   if (!Cmp) return null;
-  return <Cmp size={size} color={color} stroke={stroke} className={className} />;
+  return (
+    <Cmp size={size} color={color} stroke={stroke} className={className} />
+  );
 }

@@ -8,8 +8,8 @@
   padding: 24px 0;
 }
 
-/* In dark mode only the phone screen goes dark — the area around it stays
-   white. */
+/* In dark mode only the phone *screen* goes dark — the desk around it stays
+   light, so the device still reads as a physical object on a page. */
 .dark .phone-outer,
 .dark body {
   background: #ffffff;

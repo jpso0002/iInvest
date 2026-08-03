@@ -1,5 +1,11 @@
 import { useMemo, useState } from "react";
-import { Flower2, Sprout, TreeDeciduous, TrendingUp, type LucideIcon } from "lucide-react";
+import {
+  Flower2,
+  Sprout,
+  TreeDeciduous,
+  TrendingUp,
+  type LucideIcon,
+} from "lucide-react";
 import {
   placementQuestions,
   maxPlacementScore,
@@ -61,7 +67,8 @@ export function PlacementQuiz({ onFinish }: Props) {
               Learn to invest, one bite at a time.
             </h1>
             <p className="mt-3 text-base text-muted-foreground">
-              Short lessons, then practice with pretend money. No jargon. No real trades.
+              Short lessons, then practice with pretend money. No jargon. No
+              real trades.
             </p>
           </div>
           <div className="mt-8 flex flex-col gap-3">
@@ -107,7 +114,11 @@ export function PlacementQuiz({ onFinish }: Props) {
                       unit: scoreToUnit(nextScore, maxPlacementScore),
                     });
                   } else {
-                    setPhase({ kind: "quiz", index: nextIndex, score: nextScore });
+                    setPhase({
+                      kind: "quiz",
+                      index: nextIndex,
+                      score: nextScore,
+                    });
                   }
                 }}
                 className="w-full rounded-2xl border-2 border-border bg-card px-4 py-4 text-left text-base font-medium text-card-foreground transition-all hover:border-primary hover:bg-accent active:scale-[0.99]"
@@ -126,7 +137,10 @@ export function PlacementQuiz({ onFinish }: Props) {
               const ResultIcon = RESULT_ICON[phase.unit];
               return (
                 <div className="flex justify-center">
-                  <ResultIcon className="h-14 w-14 text-primary" strokeWidth={1.5} />
+                  <ResultIcon
+                    className="h-14 w-14 text-primary"
+                    strokeWidth={1.5}
+                  />
                 </div>
               );
             })()}
@@ -140,8 +154,8 @@ export function PlacementQuiz({ onFinish }: Props) {
               Earlier units stay open if you want to work through them too.
             </p>
             <p className="mt-6 rounded-2xl bg-accent px-4 py-3 text-sm text-accent-foreground">
-              You'll get <span className="font-semibold">pc$1,000</span> in practice money to
-              start. It's pretend — no real trades, ever.
+              You'll get <span className="font-semibold">pc$1,000</span> in
+              practice money to start. It's pretend — no real trades, ever.
             </p>
           </div>
           <button

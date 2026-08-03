@@ -18,8 +18,8 @@ export function PriceChangeTag({
         "inline-flex items-center gap-1 rounded-full font-semibold tabular " +
         (small ? "px-1.5 py-0.5 text-[11px] " : "px-2 py-1 text-xs ") +
         (positive
-          ? "bg-primary/10 text-primary"
-          : "bg-destructive/10 text-destructive")
+          ? "bg-market-up/10 text-market-up-text"
+          : "bg-market-down/10 text-market-down-text")
       }
     >
       <Icon className={small ? "h-3 w-3" : "h-3.5 w-3.5"} strokeWidth={2.3} />

@@ -29,19 +29,14 @@ export interface VisualFlow {
   steps: { icon: string; title: string; sub?: string; color: string }[];
 }
 export type FormulaPart =
-  | { value: string; label: string; color: string }
-  | { op: string };
+  { value: string; label: string; color: string } | { op: string };
 export interface VisualFormula {
   type: "formula";
   parts: FormulaPart[];
 }
 
 export type LessonVisual =
-  | VisualPie
-  | VisualBars
-  | VisualStack
-  | VisualFlow
-  | VisualFormula;
+  VisualPie | VisualBars | VisualStack | VisualFlow | VisualFormula;
 
 // ---------- Lesson structure ----------
 
@@ -121,13 +116,15 @@ export const unitById = (id: UnitNumber): UnitDef | undefined =>
 
 const R: LessonReward = { xp: 20, cash: 500 };
 
-// Palette used by the Unit 1 diagrams.
-const C_INDIGO = "#6366f1";
-const C_TEAL = "#0ea5a4";
-const C_AMBER = "#f59e0b";
-const C_ROSE = "#f43f5e";
-const C_VIOLET = "#8b5cf6";
-const C_SLATE = "#94a3b8";
+// Palette used by the lesson diagrams. These reference the shared design
+// tokens rather than their own hexes, so a diagram can never drift away from
+// the rest of the app — and they follow dark mode for free.
+const C_INDIGO = "var(--brand-purple)";
+const C_TEAL = "var(--status-success)";
+const C_AMBER = "var(--status-warning)";
+const C_ROSE = "var(--status-error)";
+const C_VIOLET = "var(--league-master)";
+const C_SLATE = "var(--market-neutral)";
 
 export const lessons: LessonDef[] = [
   // ================= UNIT 1 — Savings basics =================
@@ -146,8 +143,18 @@ export const lessons: LessonDef[] = [
         visual: {
           type: "flow",
           steps: [
-            { icon: "briefcase", title: "Work", sub: "Time & skills", color: C_INDIGO },
-            { icon: "coin", title: "Money", sub: "Universal exchange", color: C_AMBER },
+            {
+              icon: "briefcase",
+              title: "Work",
+              sub: "Time & skills",
+              color: C_INDIGO,
+            },
+            {
+              icon: "coin",
+              title: "Money",
+              sub: "Universal exchange",
+              color: C_AMBER,
+            },
             {
               icon: "shopping-cart",
               title: "Goods & services",
@@ -193,7 +200,8 @@ export const lessons: LessonDef[] = [
           "How old the notes are",
         ],
         correctIndex: 1,
-        explanation: "Money is a tool of exchange — its worth is in what it can be traded for.",
+        explanation:
+          "Money is a tool of exchange — its worth is in what it can be traded for.",
       },
       {
         kind: "mcq",
@@ -205,7 +213,8 @@ export const lessons: LessonDef[] = [
           "Never buying anything",
         ],
         correctIndex: 1,
-        explanation: "It's about holding back a portion now so future-you has options.",
+        explanation:
+          "It's about holding back a portion now so future-you has options.",
       },
     ],
   },
@@ -224,7 +233,12 @@ export const lessons: LessonDef[] = [
         visual: {
           type: "flow",
           steps: [
-            { icon: "wallet", title: "Income", sub: "What comes in", color: C_TEAL },
+            {
+              icon: "wallet",
+              title: "Income",
+              sub: "What comes in",
+              color: C_TEAL,
+            },
             {
               icon: "receipt",
               title: "Expenses",
@@ -271,7 +285,8 @@ export const lessons: LessonDef[] = [
           "An investment account",
         ],
         correctIndex: 0,
-        explanation: "Income in, expenses out — that overview is the whole point.",
+        explanation:
+          "Income in, expenses out — that overview is the whole point.",
       },
       {
         kind: "mcq",
@@ -349,7 +364,8 @@ export const lessons: LessonDef[] = [
           "There's no useful target",
         ],
         correctIndex: 1,
-        explanation: "Enough runway to absorb a real setback without selling anything.",
+        explanation:
+          "Enough runway to absorb a real setback without selling anything.",
       },
       {
         kind: "mcq",
@@ -361,7 +377,8 @@ export const lessons: LessonDef[] = [
           "It removes all fees",
         ],
         correctIndex: 1,
-        explanation: "Forced selling during a dip is exactly what the cushion prevents.",
+        explanation:
+          "Forced selling during a dip is exactly what the cushion prevents.",
       },
     ],
   },
@@ -418,10 +435,12 @@ export const lessons: LessonDef[] = [
       },
       {
         kind: "mcq",
-        prompt: "pc$1,000 at 5% becomes pc$1,050 after a year. In year 2, the 5% applies to…",
+        prompt:
+          "pc$1,000 at 5% becomes pc$1,050 after a year. In year 2, the 5% applies to…",
         options: ["pc$1,000", "pc$1,050", "pc$50", "pc$0"],
         correctIndex: 1,
-        explanation: "The base grows each year — that's the whole compounding effect.",
+        explanation:
+          "The base grows each year — that's the whole compounding effect.",
       },
       {
         kind: "mcq",
@@ -433,7 +452,8 @@ export const lessons: LessonDef[] = [
           "You avoid investing entirely",
         ],
         correctIndex: 1,
-        explanation: "The snowball needs time — decades is where it gets dramatic.",
+        explanation:
+          "The snowball needs time — decades is where it gets dramatic.",
       },
     ],
   },
@@ -511,12 +531,18 @@ export const lessons: LessonDef[] = [
           "Identical for everyone",
         ],
         correctIndex: 1,
-        explanation: "A target you can measure is a target you can actually hit.",
+        explanation:
+          "A target you can measure is a target you can actually hit.",
       },
       {
         kind: "mcq",
         prompt: "Saving pc$3,000 over 24 months means setting aside about…",
-        options: ["pc$125 / month", "pc$300 / month", "pc$30 / month", "pc$1,000 / month"],
+        options: [
+          "pc$125 / month",
+          "pc$300 / month",
+          "pc$30 / month",
+          "pc$1,000 / month",
+        ],
         correctIndex: 0,
         explanation: "pc$3,000 ÷ 24 months = pc$125 per month.",
       },
@@ -547,7 +573,8 @@ export const lessons: LessonDef[] = [
           "A tax on savings",
         ],
         correctIndex: 1,
-        explanation: "The price changes continuously based on supply and demand in the market.",
+        explanation:
+          "The price changes continuously based on supply and demand in the market.",
       },
       {
         kind: "mcq",
@@ -559,7 +586,8 @@ export const lessons: LessonDef[] = [
           "Nothing — it's fixed",
         ],
         correctIndex: 0,
-        explanation: "Every trade nudges the price; that's all a price really is.",
+        explanation:
+          "Every trade nudges the price; that's all a price really is.",
       },
       {
         kind: "mcq",
@@ -694,8 +722,14 @@ export const lessons: LessonDef[] = [
       },
       {
         kind: "mcq",
-        prompt: "If demand for an asset far exceeds supply, the price tends to…",
-        options: ["Rise", "Fall", "Stay frozen by law", "Depend only on the government"],
+        prompt:
+          "If demand for an asset far exceeds supply, the price tends to…",
+        options: [
+          "Rise",
+          "Fall",
+          "Stay frozen by law",
+          "Depend only on the government",
+        ],
         correctIndex: 0,
         explanation: "More buyers than available sellers pushes the price up.",
       },
@@ -790,14 +824,25 @@ export const lessons: LessonDef[] = [
       {
         kind: "mcq",
         prompt: "You buy a share at pc$100 and sell it at pc$120. You realize…",
-        options: ["A pc$20 loss", "A pc$20 gain", "No gain or loss", "A pc$100 gain"],
+        options: [
+          "A pc$20 loss",
+          "A pc$20 gain",
+          "No gain or loss",
+          "A pc$100 gain",
+        ],
         correctIndex: 1,
-        explanation: "Sell price minus buy price — pc$120 − pc$100 = pc$20 gain.",
+        explanation:
+          "Sell price minus buy price — pc$120 − pc$100 = pc$20 gain.",
       },
       {
         kind: "mcq",
         prompt: "As long as you have not sold, a gain or loss is…",
-        options: ["Realized", "Only unrealized", "Taxed immediately", "Impossible"],
+        options: [
+          "Realized",
+          "Only unrealized",
+          "Taxed immediately",
+          "Impossible",
+        ],
         correctIndex: 1,
         explanation: "It's on paper until the sale actually happens.",
       },
@@ -838,7 +883,8 @@ export const lessons: LessonDef[] = [
       },
       {
         kind: "mcq",
-        prompt: "If you buy the same asset at several prices, your reference price is…",
+        prompt:
+          "If you buy the same asset at several prices, your reference price is…",
         options: [
           "The very first price you paid",
           "The weighted average of all your purchases",
@@ -910,7 +956,8 @@ export const lessons: LessonDef[] = [
           "They only apply after 50 years",
         ],
         correctIndex: 1,
-        explanation: "Compounding works against you when it's applied to a fee.",
+        explanation:
+          "Compounding works against you when it's applied to a fee.",
       },
     ],
   },
@@ -952,7 +999,8 @@ export const lessons: LessonDef[] = [
           "Only the day of the week you buy",
         ],
         correctIndex: 1,
-        explanation: "Spreading along several dimensions is what makes it work.",
+        explanation:
+          "Spreading along several dimensions is what makes it work.",
       },
       {
         kind: "mcq",
@@ -964,7 +1012,8 @@ export const lessons: LessonDef[] = [
           "Only for bonds",
         ],
         correctIndex: 1,
-        explanation: "It reduces asset-specific risk, not the market's own swings.",
+        explanation:
+          "It reduces asset-specific risk, not the market's own swings.",
       },
     ],
   },
@@ -1016,7 +1065,8 @@ export const lessons: LessonDef[] = [
           "Never change price",
         ],
         correctIndex: 1,
-        explanation: "Volatility cuts in both directions — that's the whole point.",
+        explanation:
+          "Volatility cuts in both directions — that's the whole point.",
       },
     ],
   },
@@ -1043,7 +1093,8 @@ export const lessons: LessonDef[] = [
           "Guarantee a fixed return",
         ],
         correctIndex: 1,
-        explanation: "By replicating a broad index, an ETF automatically diversifies your investment.",
+        explanation:
+          "By replicating a broad index, an ETF automatically diversifies your investment.",
       },
       {
         kind: "mcq",
@@ -1094,7 +1145,8 @@ export const lessons: LessonDef[] = [
           "Paying no fees",
         ],
         correctIndex: 1,
-        explanation: "Dollar-cost averaging reduces the impact of a single mistimed buy.",
+        explanation:
+          "Dollar-cost averaging reduces the impact of a single mistimed buy.",
       },
       {
         kind: "mcq",
@@ -1142,7 +1194,8 @@ export const lessons: LessonDef[] = [
           "The number of investors",
         ],
         correctIndex: 1,
-        explanation: "It's the standard measure to compare the size of two different assets.",
+        explanation:
+          "It's the standard measure to compare the size of two different assets.",
       },
       {
         kind: "mcq",
@@ -1166,7 +1219,8 @@ export const lessons: LessonDef[] = [
           "Must be in the same sector",
         ],
         correctIndex: 1,
-        explanation: "Supply differs, so identical prices say nothing about size.",
+        explanation:
+          "Supply differs, so identical prices say nothing about size.",
       },
     ],
   },
@@ -1193,7 +1247,8 @@ export const lessons: LessonDef[] = [
           "The asset is only for professionals",
         ],
         correctIndex: 1,
-        explanation: "The higher the volume, the easier it is to find a counterparty to buy or sell.",
+        explanation:
+          "The higher the volume, the easier it is to find a counterparty to buy or sell.",
       },
       {
         kind: "mcq",
@@ -1217,7 +1272,8 @@ export const lessons: LessonDef[] = [
           "Free of fees",
         ],
         correctIndex: 1,
-        explanation: "Thin volume means fewer counterparties waiting on the other side.",
+        explanation:
+          "Thin volume means fewer counterparties waiting on the other side.",
       },
     ],
   },
@@ -1244,7 +1300,8 @@ export const lessons: LessonDef[] = [
           "The listing currency",
         ],
         correctIndex: 0,
-        explanation: "It's a key piece of data — combined with price — to compute market cap.",
+        explanation:
+          "It's a key piece of data — combined with price — to compute market cap.",
       },
       {
         kind: "mcq",
@@ -1268,7 +1325,8 @@ export const lessons: LessonDef[] = [
           "More investors",
         ],
         correctIndex: 0,
-        explanation: "Fewer units in existence means each one is relatively scarcer.",
+        explanation:
+          "Fewer units in existence means each one is relatively scarcer.",
       },
     ],
   },
@@ -1295,7 +1353,8 @@ export const lessons: LessonDef[] = [
           "Tomorrow's expected price",
         ],
         correctIndex: 2,
-        explanation: "The ATH is a historical marker, not a prediction of future price.",
+        explanation:
+          "The ATH is a historical marker, not a prediction of future price.",
       },
       {
         kind: "mcq",
@@ -1307,7 +1366,8 @@ export const lessons: LessonDef[] = [
           "The management fee",
         ],
         correctIndex: 0,
-        explanation: "Low to high over the period, giving you a band for context.",
+        explanation:
+          "Low to high over the period, giving you a band for context.",
       },
       {
         kind: "mcq",
@@ -1371,7 +1431,8 @@ export const lessons: LessonDef[] = [
           "Only on Fridays",
         ],
         correctIndex: 1,
-        explanation: "Indicators describe pressure; they don't promise outcomes.",
+        explanation:
+          "Indicators describe pressure; they don't promise outcomes.",
       },
     ],
   },
@@ -1411,7 +1472,8 @@ export const lessons: LessonDef[] = [
           "Trade without a broker",
         ],
         correctIndex: 1,
-        explanation: "Conviction comes from understanding, and it's what stops panic selling.",
+        explanation:
+          "Conviction comes from understanding, and it's what stops panic selling.",
       },
       {
         kind: "mcq",
@@ -1423,7 +1485,8 @@ export const lessons: LessonDef[] = [
           "Improve returns",
         ],
         correctIndex: 1,
-        explanation: "Without understanding, every dip feels like a reason to bail.",
+        explanation:
+          "Without understanding, every dip feels like a reason to bail.",
       },
     ],
   },
@@ -1465,7 +1528,8 @@ export const lessons: LessonDef[] = [
           "Historical dividends",
         ],
         correctIndex: 1,
-        explanation: "It's the live queue of what people are willing to trade at.",
+        explanation:
+          "It's the live queue of what people are willing to trade at.",
       },
       {
         kind: "mcq",
@@ -1477,7 +1541,8 @@ export const lessons: LessonDef[] = [
           "Fees are higher",
         ],
         correctIndex: 1,
-        explanation: "Lots of buyers and sellers close together narrows the gap.",
+        explanation:
+          "Lots of buyers and sellers close together narrows the gap.",
       },
     ],
   },
@@ -1504,7 +1569,8 @@ export const lessons: LessonDef[] = [
           "The number of investors",
         ],
         correctIndex: 1,
-        explanation: "A candlestick chart packs more information than a simple price line.",
+        explanation:
+          "A candlestick chart packs more information than a simple price line.",
       },
       {
         kind: "mcq",
@@ -1547,7 +1613,8 @@ export const lessons: LessonDef[] = [
       },
       {
         kind: "mcq",
-        prompt: "What is the main difference between a market order and a limit order?",
+        prompt:
+          "What is the main difference between a market order and a limit order?",
         options: [
           "There is no difference",
           "A market order executes immediately at the current price; a limit order waits for the chosen price",
@@ -1555,7 +1622,8 @@ export const lessons: LessonDef[] = [
           "A market order requires a preset price",
         ],
         correctIndex: 1,
-        explanation: "A market order prioritizes speed; a limit order prioritizes price control.",
+        explanation:
+          "A market order prioritizes speed; a limit order prioritizes price control.",
       },
       {
         kind: "mcq",
@@ -1567,12 +1635,18 @@ export const lessons: LessonDef[] = [
           "It can only be used to sell",
         ],
         correctIndex: 1,
-        explanation: "If the price never reaches your limit, the order simply doesn't fill.",
+        explanation:
+          "If the price never reaches your limit, the order simply doesn't fill.",
       },
       {
         kind: "mcq",
         prompt: "If you care most about getting filled right now, you'd use…",
-        options: ["A limit order", "A market order", "A stop-loss", "No order at all"],
+        options: [
+          "A limit order",
+          "A market order",
+          "A stop-loss",
+          "No order at all",
+        ],
         correctIndex: 1,
         explanation: "Market orders trade price certainty for speed.",
       },
@@ -1677,7 +1751,8 @@ export const lessons: LessonDef[] = [
           "Fee-free",
         ],
         correctIndex: 1,
-        explanation: "Thin or fast markets move away from your expected price fastest.",
+        explanation:
+          "Thin or fast markets move away from your expected price fastest.",
       },
     ],
   },
@@ -1704,7 +1779,8 @@ export const lessons: LessonDef[] = [
           "Ignoring risk completely",
         ],
         correctIndex: 1,
-        explanation: "Consistency and alignment with your goals matter far more than perfect timing.",
+        explanation:
+          "Consistency and alignment with your goals matter far more than perfect timing.",
       },
       {
         kind: "mcq",
@@ -1742,7 +1818,10 @@ export const lessonById = (id: LessonId): LessonDef | undefined =>
 export const lessonsByUnit = (unit: UnitNumber): LessonDef[] =>
   lessons.filter((l) => l.unit === unit).sort((a, b) => a.order - b.order);
 
-export const isLessonUnlocked = (lesson: LessonDef, completed: string[]): boolean => {
+export const isLessonUnlocked = (
+  lesson: LessonDef,
+  completed: string[],
+): boolean => {
   if (lesson.order === 1) return true;
   const prev = lessons.find((l) => l.order === lesson.order - 1);
   if (!prev) return true;

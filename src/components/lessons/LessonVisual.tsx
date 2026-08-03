@@ -60,7 +60,9 @@ function Pie({ visual }: { visual: Extract<VisualDef, { type: "pie" }> }) {
               style={{ background: s.color }}
               aria-hidden
             />
-            <span className="font-semibold tabular-nums text-foreground">{s.value}%</span>
+            <span className="font-semibold tabular-nums text-foreground">
+              {s.value}%
+            </span>
             <span className="text-muted-foreground">{s.label}</span>
           </li>
         ))}
@@ -89,7 +91,9 @@ function Bars({ visual }: { visual: Extract<VisualDef, { type: "bars" }> }) {
               </span>
             </div>
           </div>
-          <span className="text-center text-xs text-muted-foreground">{s.label}</span>
+          <span className="text-center text-xs text-muted-foreground">
+            {s.label}
+          </span>
         </div>
       ))}
     </div>
@@ -105,7 +109,9 @@ function Stack({ visual }: { visual: Extract<VisualDef, { type: "stack" }> }) {
           className="flex items-center justify-center rounded-lg py-2.5"
           style={{ background: l.color, width: `${l.width}%` }}
         >
-          <span className="px-2 text-center text-[11px] font-bold text-white">{l.label}</span>
+          <span className="px-2 text-center text-[11px] font-bold text-white">
+            {l.label}
+          </span>
         </div>
       ))}
     </div>
@@ -126,9 +132,13 @@ function Flow({ visual }: { visual: Extract<VisualDef, { type: "flow" }> }) {
               <Icon name={s.icon} size={20} stroke={2} />
             </span>
             <span className="min-w-0">
-              <span className="block text-sm font-semibold text-foreground">{s.title}</span>
+              <span className="block text-sm font-semibold text-foreground">
+                {s.title}
+              </span>
               {s.sub && (
-                <span className="block text-xs text-muted-foreground">{s.sub}</span>
+                <span className="block text-xs text-muted-foreground">
+                  {s.sub}
+                </span>
               )}
             </span>
           </div>
@@ -141,7 +151,11 @@ function Flow({ visual }: { visual: Extract<VisualDef, { type: "flow" }> }) {
   );
 }
 
-function Formula({ visual }: { visual: Extract<VisualDef, { type: "formula" }> }) {
+function Formula({
+  visual,
+}: {
+  visual: Extract<VisualDef, { type: "formula" }>;
+}) {
   return (
     <div className="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 rounded-2xl border border-border bg-muted/40 px-4 py-4">
       {visual.parts.map((p, i) =>
@@ -151,7 +165,10 @@ function Formula({ visual }: { visual: Extract<VisualDef, { type: "formula" }> }
           </span>
         ) : (
           <span key={i} className="flex flex-col items-center">
-            <span className="text-base font-bold tabular-nums" style={{ color: p.color }}>
+            <span
+              className="text-base font-bold tabular-nums"
+              style={{ color: p.color }}
+            >
               {p.value}
             </span>
             <span className="text-[10px] uppercase tracking-wide text-muted-foreground">

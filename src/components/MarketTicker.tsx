@@ -15,7 +15,10 @@ export function MarketTicker() {
     return { id: a.id, name: a.name, price, changePct };
   });
 
-  const items = [...quotes, ...quotes].map((q, i) => ({ ...q, key: `${q.id}-${i}` }));
+  const items = [...quotes, ...quotes].map((q, i) => ({
+    ...q,
+    key: `${q.id}-${i}`,
+  }));
 
   return (
     <div
@@ -28,7 +31,9 @@ export function MarketTicker() {
           return (
             <div key={item.key} className="flex items-center gap-2 text-xs">
               <span className="font-semibold text-foreground">{item.name}</span>
-              <span className="tabular text-muted-foreground">{pcMoney(item.price)}</span>
+              <span className="tabular text-muted-foreground">
+                {pcMoney(item.price)}
+              </span>
               <span
                 className={
                   "flex items-center gap-0.5 tabular font-medium " +

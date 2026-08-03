@@ -377,7 +377,7 @@ export function LessonPath({ completedLessons }: Props) {
                 {completedInLevel} / {levelLessons.length} lessons
               </span>
             </div>
-            <div className="h-2 w-full overflow-hidden rounded-full bg-primary/20">
+            <div className="h-2 w-full overflow-hidden rounded-full bg-progress-track">
               <div
                 className="h-full rounded-full bg-primary transition-all"
                 style={{
@@ -504,12 +504,15 @@ function LessonNodeButton({
         ? "h-20 w-20 rounded-[22px]"
         : "h-[58px] w-[58px] rounded-full";
 
+  // The chunky "3D" bottom edge is a shadow in a deeper shade of the fill.
+  // All four colours are tokens, so the nodes follow the theme (and dark mode)
+  // without a single hardcoded hex or a `dark:` override.
   const colorClass =
     state === "completed"
-      ? "bg-[#10B981] shadow-[0_6px_0_0_#047857] active:translate-y-[3px] active:shadow-[0_3px_0_0_#047857]"
+      ? "bg-success shadow-[0_6px_0_0_var(--status-success-deep)] active:translate-y-[3px] active:shadow-[0_3px_0_0_var(--status-success-deep)]"
       : state === "current"
-        ? "bg-[#1E293B] shadow-[0_8px_0_0_#0F172A] active:translate-y-[3px] active:shadow-[0_4px_0_0_#0F172A] dark:bg-primary dark:shadow-[0_8px_0_0_var(--primary-foreground)] dark:active:shadow-[0_4px_0_0_var(--primary-foreground)]"
-        : "bg-[#E2E8F0] shadow-[0_6px_0_0_#CBD5E1] opacity-85 dark:bg-[#2E2F3A] dark:shadow-[0_6px_0_0_#1E1F28] dark:opacity-100";
+        ? "bg-primary shadow-[0_8px_0_0_var(--brand-purple-dark)] active:translate-y-[3px] active:shadow-[0_4px_0_0_var(--brand-purple-dark)]"
+        : "bg-[var(--neutral-disabled)] shadow-[0_6px_0_0_var(--neutral-disabled-deep)]";
 
   const inner = (
     <span
@@ -521,16 +524,22 @@ function LessonNodeButton({
       )}
     >
       {state === "current" && (
-        <span className="absolute -top-7 left-1/2 whitespace-nowrap rounded-lg bg-[#FFD700] px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-[#7A4B00] shadow-[0_3px_0_0_#B8860B] animate-[badge-bounce_1.6s_ease-in-out_infinite] motion-reduce:animate-none">
+        <span className="absolute -top-7 left-1/2 whitespace-nowrap rounded-lg bg-reward px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-reward-foreground shadow-[0_3px_0_0_var(--reward-gold-dark)] animate-[badge-bounce_1.6s_ease-in-out_infinite] motion-reduce:animate-none">
           Start
         </span>
       )}
       {state === "completed" ? (
-        <Check className="h-6 w-6 text-white" strokeWidth={2.6} />
+        <Check className="h-6 w-6 text-success-foreground" strokeWidth={2.6} />
       ) : state === "locked" ? (
-        <Lock className="h-5 w-5 text-[#94A3B8]" strokeWidth={2.4} />
+        <Lock
+          className="h-5 w-5 text-[var(--text-placeholder)]"
+          strokeWidth={2.4}
+        />
       ) : (
-        <LineChart className="h-7 w-7 text-[#10B981]" strokeWidth={2.4} />
+        <LineChart
+          className="h-7 w-7 text-primary-foreground"
+          strokeWidth={2.4}
+        />
       )}
     </span>
   );

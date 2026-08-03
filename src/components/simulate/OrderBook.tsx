@@ -63,7 +63,7 @@ function Row({
       <div
         className={
           "absolute inset-y-0 left-0 opacity-15 " +
-          (isBuy ? "bg-primary" : "bg-destructive")
+          (isBuy ? "bg-market-up" : "bg-market-down")
         }
         style={{ width: `${(qty / maxQty) * 100}%` }}
         aria-hidden="true"
@@ -71,7 +71,7 @@ function Row({
       <span
         className={
           "relative tabular font-medium " +
-          (isBuy ? "text-primary" : "text-destructive")
+          (isBuy ? "text-market-up-text" : "text-market-down-text")
         }
       >
         {pcMoney(price)}

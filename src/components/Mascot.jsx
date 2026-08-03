@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import mascotImg from '../assets/mascot-coach.png';
-import './Mascot.css';
+import { useState } from "react";
+import mascotImg from "../assets/mascot-coach.png";
+import "./Mascot.css";
 
 /**
  * Mascot coach that displays a contextual tip in a speech bubble.
@@ -12,9 +12,9 @@ import './Mascot.css';
  */
 export default function Mascot({
   tip,
-  name = 'Coach',
+  name = "Coach",
   dismissible = true,
-  variant = 'inline',
+  variant = "inline",
 }) {
   const [visible, setVisible] = useState(true);
   if (!visible) return null;

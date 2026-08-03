@@ -5,6 +5,7 @@ import { useAppStore } from "@/store/useAppStore";
 import {
   LEAGUE_BOTS,
   computeLeague,
+  leagueToken,
   daysUntilWeekReset,
   weeklyBotXp,
 } from "@/lib/league";
@@ -56,8 +57,19 @@ function LeaguePage() {
   return (
     <main className="space-y-6 px-5 pt-6 pb-10">
       <header className="flex flex-col items-center text-center">
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-accent">
-          <Trophy className="h-7 w-7 text-primary" strokeWidth={1.6} />
+        {/* Trophy takes the tier's own metal, so Bronze/Silver/Gold/Platinum
+            are visually distinct rather than all brand purple. */}
+        <div
+          className="flex h-14 w-14 items-center justify-center rounded-2xl"
+          style={{
+            background: `color-mix(in srgb, var(${leagueToken(league)}) 22%, transparent)`,
+          }}
+        >
+          <Trophy
+            className="h-7 w-7"
+            strokeWidth={1.6}
+            style={{ color: `var(${leagueToken(league)})` }}
+          />
         </div>
         <h1 className="mt-3 text-2xl font-bold tracking-tight text-foreground">
           {league}

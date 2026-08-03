@@ -108,7 +108,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         // Installable-app hints. iOS Safari still ignores most of the web
         // manifest, so the apple-* tags below are what actually make
         // "Add to Home Screen" launch full-screen without browser chrome.
-        { name: "theme-color", content: "#0077B3" },
+        { name: "theme-color", content: "#5A4FE6" },
         { name: "mobile-web-app-capable", content: "yes" },
         { name: "apple-mobile-web-app-capable", content: "yes" },
         { name: "apple-mobile-web-app-title", content: "iInvest" },

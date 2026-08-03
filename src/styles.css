@@ -5,13 +5,69 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/*
- * iInvest design tokens — light theme only for V1.
- * All component color MUST come from these tokens (never hardcode).
- * See docs/design.md for role definitions.
- */
+/* ============================================================================
+ * iInvest design tokens — TIER 2: SEMANTICS
+ *
+ * Every token here is a *role* ("what is this colour for"), resolved from the
+ * raw brand primitives in theme.css. Components must only ever reference these
+ * — never a hex, never a primitive. Dark mode is handled entirely by theme.css
+ * swapping the primitives underneath, so there is no `.dark` block below.
+ *
+ * Tailwind utility  →  token
+ *   bg-primary          brand purple (buttons, active nav, progress fill)
+ *   bg-card             white surface
+ *   bg-secondary        secondary surface
+ *   text-muted-foreground  secondary text
+ *   text-success        gains, correct answers, completed
+ *   text-destructive    losses, wrong answers, errors
+ *   text-warning        streaks, volatility, pending
+ *   text-info           tutorials, hints
+ *   text-reward         coins, XP, achievements
+ *   text-market-up / -down / -neutral   market performance only
+ * ==========================================================================*/
 
 @theme inline {
+  /* Status */
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-warning-surface: var(--warning-surface);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-info-surface: var(--info-surface);
+  --color-success-surface: var(--success-surface);
+  --color-destructive-surface: var(--destructive-surface);
+
+  /* Rewards */
+  --color-reward: var(--reward);
+  --color-reward-foreground: var(--reward-foreground);
+  --color-reward-surface: var(--reward-surface);
+
+  /* Market performance. Use `-up`/`-down` for fills and chart strokes, and
+     `-up-text`/`-down-text` for anything with words in it — the vivid values
+     don't reach 4.5:1 as text. */
+  --color-market-up: var(--market-up);
+  --color-market-up-text: var(--market-up-text);
+  --color-market-down: var(--market-down);
+  --color-market-down-text: var(--market-down-text);
+  --color-market-neutral: var(--market-neutral);
+
+  /* Readable-on-tint text colours for each status. */
+  --color-success-text: var(--status-success-text);
+  --color-destructive-text: var(--status-error-text);
+  --color-warning-text: var(--status-warning-text);
+  --color-info-text: var(--status-info-text);
+
+  /* Leagues */
+  --color-league-bronze: var(--league-bronze);
+  --color-league-silver: var(--league-silver);
+  --color-league-gold: var(--league-gold);
+  --color-league-platinum: var(--league-platinum);
+  --color-league-diamond: var(--league-diamond);
+  --color-league-master: var(--league-master);
+
+  /* Progress */
+  --color-progress-track: var(--progress-track);
+
   --radius-sm: calc(var(--radius) - 8px);
   --radius-md: calc(var(--radius) - 4px);
   --radius-lg: var(--radius);
@@ -41,8 +97,10 @@
   --color-ring-offset-background: var(--background);
   --color-practice: var(--practice);
   --color-practice-foreground: var(--practice-foreground);
-  --color-success: var(--primary);
-  --color-success-foreground: var(--primary-foreground);
+  /* Success is now genuinely green. It previously aliased --primary, which
+     meant a "correct answer" and a "primary button" were the same colour. */
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -59,61 +117,78 @@
 }
 
 :root {
-  /* Shape */
+  /* Shape — 1rem base gives cards the 20px radius the design calls for via
+     `rounded-3xl` (--radius + 16px = 32px) and `rounded-xl` (20px). Unchanged
+     so no corner in the app moves. */
   --radius: 1rem;
 
-  /* Palette
-   * #0077B3  deep blue    — primary
-   * #A3D1E0  mid blue     — accent / borders
-   * #E0F7FA  pale cyan    — muted surface
-   * #F0F8FF  alice blue   — app background
-   * #FFFFFF  white        — cards / popovers
-   */
-
-  /* Surfaces */
-  --background: #F0F8FF;
-  --foreground: #0B2A3A;                         /* deep navy for contrast on light blues */
-  --card: #FFFFFF;
+  /* ---- Surfaces ---- */
+  --background: var(--neutral-bg);
+  --foreground: var(--text-primary);
+  --card: var(--neutral-surface);
   --card-foreground: var(--foreground);
-  --popover: #FFFFFF;
+  --popover: var(--neutral-surface);
   --popover-foreground: var(--foreground);
 
-  /* Brand — deep blue */
-  --primary: #0077B3;
-  --primary-foreground: #FFFFFF;
+  /* ---- Brand ---- */
+  --primary: var(--brand-purple);
+  --primary-foreground: var(--text-on-color);
 
-  /* Secondary — pale cyan surface */
-  --secondary: #E0F7FA;
+  /* Secondary surface — the light grey-lilac used for inset panels and
+     unselected pills. */
+  --secondary: var(--neutral-surface-2);
   --secondary-foreground: var(--foreground);
 
-  /* Muted (locked, disabled) */
-  --muted: #E0F7FA;
-  --muted-foreground: #4A6B7A;
+  /* Muted — inset panels, locked states. Foreground is the secondary text
+     colour so muted copy stays readable (7.1:1 on white). */
+  --muted: var(--neutral-surface-2);
+  --muted-foreground: var(--text-secondary);
 
-  /* Accent — mid blue (streak / highlight chip) */
-  --accent: #A3D1E0;
-  --accent-foreground: #0B2A3A;
+  /* Accent — purple tint, for highlight chips and selected surfaces. */
+  --accent: var(--brand-purple-tint);
+  --accent-foreground: var(--brand-purple-dark);
 
-  /* Destructive — red-orange, not pure red (kept for semantic clarity) */
-  --destructive: oklch(0.63 0.2 30);
-  --destructive-foreground: #FFFFFF;
+  /* ---- Status ---- */
+  --success: var(--status-success);
+  --success-foreground: var(--text-on-color);
+  --success-surface: var(--status-success-light);
 
-  /* Practice money — deeper navy-blue variant of the palette, still clearly
-     distinct from --primary so it can never be mistaken for real currency. */
-  --practice: #0B2A3A;
-  --practice-foreground: #E0F7FA;
+  --destructive: var(--status-error);
+  --destructive-foreground: var(--text-on-color);
+  --destructive-surface: var(--status-error-light);
 
-  /* Lines / rings */
-  --border: #A3D1E0;
-  --input: #A3D1E0;
-  --ring: #0077B3;
+  --warning: var(--status-warning);
+  --warning-foreground: var(--text-primary);
+  --warning-surface: var(--status-warning-light);
 
-  /* Charts */
-  --chart-1: #0077B3;
-  --chart-2: #A3D1E0;
-  --chart-3: #0B2A3A;
-  --chart-4: #E0F7FA;
-  --chart-5: oklch(0.63 0.2 30);
+  --info: var(--status-info);
+  --info-foreground: var(--text-on-color);
+  --info-surface: var(--status-info-light);
+
+  /* ---- Rewards ---- */
+  --reward: var(--reward-gold);
+  --reward-foreground: var(--text-primary);
+  --reward-surface: var(--reward-gold-light);
+
+  /* Practice money — the informational blue. Deliberately NOT brand purple
+     (would read as a primary action) and NOT green (would read as a real
+     gain); neutral grey was tried and reads as "disabled", which undersells a
+     safety disclaimer. Blue is the palette's "informational message" role,
+     which is exactly what a pc$ badge is. */
+  --practice: var(--status-info);
+  --practice-foreground: var(--status-info-text);
+
+  /* ---- Lines / rings ---- */
+  --border: var(--neutral-border);
+  --input: var(--neutral-border);
+  --ring: var(--brand-purple);
+
+  /* ---- Charts — the five-colour default palette, in order ---- */
+  --chart-1: var(--brand-purple);
+  --chart-2: var(--status-success);
+  --chart-3: var(--status-warning);
+  --chart-4: var(--status-info);
+  --chart-5: var(--reward-gold);
 
   /* Sidebar (unused in V1 but kept for shadcn primitives) */
   --sidebar: var(--background);
@@ -126,49 +201,12 @@
   --sidebar-ring: var(--ring);
 }
 
-/* Dark mode — toggled by adding `.dark` on <html> (see Profile's toggle).
-   Same structure as :root above; only the color values change. Sidebar
-   tokens are omitted deliberately — they're defined in :root as var(...)
-   references and resolve against whichever block wins the cascade. */
-.dark {
-  --background: #0b1620;
-  --foreground: #e8f1f7;
-  --card: #122230;
-  --card-foreground: var(--foreground);
-  --popover: #122230;
-  --popover-foreground: var(--foreground);
-
-  --primary: #4fb3e8;
-  --primary-foreground: #072330;
-
-  --secondary: #16303c;
-  --secondary-foreground: var(--foreground);
-
-  --muted: #16303c;
-  --muted-foreground: #8fb0be;
-
-  --accent: #2e6e85;
-  --accent-foreground: var(--foreground);
-
-  --destructive: oklch(0.7 0.19 30);
-  --destructive-foreground: #1a0500;
-
-  /* Practice money — teal instead of light mode's deep navy, since navy
-     would now blend into the dark background. Still clearly distinct
-     from --primary so it can never read as real currency. */
-  --practice: #34c7a0;
-  --practice-foreground: #052b22;
-
-  --border: #22384a;
-  --input: #22384a;
-  --ring: #4fb3e8;
-
-  --chart-1: #4fb3e8;
-  --chart-2: #2e6e85;
-  --chart-3: #e8f1f7;
-  --chart-4: #16303c;
-  --chart-5: oklch(0.7 0.19 30);
-}
+/* No `.dark` block here on purpose.
+ *
+ * Every semantic token above resolves to a primitive, and theme.css swaps the
+ * primitives under `.dark`. So dark mode is one override list in one file
+ * instead of two parallel palettes that drift apart — which is exactly what
+ * had happened before this refactor. */
 
 @layer base {
   * {
@@ -178,8 +216,15 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-      "Helvetica Neue", Arial, sans-serif;
+    font-family:
+      ui-sans-serif,
+      system-ui,
+      -apple-system,
+      "Segoe UI",
+      Roboto,
+      "Helvetica Neue",
+      Arial,
+      sans-serif;
   }
 
   /* Tabular numerics for money/XP/prices */
@@ -226,7 +271,8 @@
     opacity: 1;
   }
   100% {
-    transform: translate(var(--confetti-x), var(--confetti-y)) rotate(var(--confetti-rotate));
+    transform: translate(var(--confetti-x), var(--confetti-y))
+      rotate(var(--confetti-rotate));
     opacity: 0;
   }
 }

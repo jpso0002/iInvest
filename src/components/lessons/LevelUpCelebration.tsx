@@ -63,7 +63,9 @@ export function LevelUpCelebration({ newUnit }: Props) {
         )}
       >
         <PartyPopper className="h-5 w-5" aria-hidden="true" />
-        <span className="text-base font-semibold">Unit {newUnit} unlocked!</span>
+        <span className="text-base font-semibold">
+          Unit {newUnit} unlocked!
+        </span>
       </div>
     </div>
   );

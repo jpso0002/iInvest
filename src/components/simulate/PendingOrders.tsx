@@ -49,7 +49,7 @@ export function PendingOrders({
           return (
             <div
               key={o.id}
-              className="flex items-center gap-3 rounded-2xl bg-muted/50 p-3"
+              className="flex items-center gap-3 rounded-2xl bg-warning-surface p-3"
             >
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-semibold">

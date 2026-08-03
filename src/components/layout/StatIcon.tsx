@@ -1,12 +1,15 @@
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export type StatTone = "accent" | "primary" | "practice";
+export type StatTone = "streak" | "reward" | "primary" | "practice";
 
 const TONE_CLASS: Record<StatTone, string> = {
-  accent: "bg-accent text-accent-foreground",
+  // Streak is a daily-habit nudge, which the palette assigns to warning/orange.
+  streak: "bg-warning text-warning-foreground",
+  // XP is a reward, so it takes the coin gold rather than brand purple.
+  reward: "bg-reward text-reward-foreground",
   primary: "bg-primary text-primary-foreground",
-  practice: "bg-practice text-practice-foreground",
+  practice: "bg-practice text-primary-foreground",
 };
 
 interface Props {
@@ -16,7 +19,12 @@ interface Props {
   iconClassName?: string;
 }
 
-export function StatIcon({ icon: Icon, tone, className, iconClassName }: Props) {
+export function StatIcon({
+  icon: Icon,
+  tone,
+  className,
+  iconClassName,
+}: Props) {
   return (
     <span
       className={cn(

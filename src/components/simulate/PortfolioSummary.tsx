@@ -42,7 +42,7 @@ export function PortfolioSummary() {
           <p
             className={
               "mt-1 text-sm tabular " +
-              (pnlPositive ? "text-primary" : "text-destructive")
+              (pnlPositive ? "text-market-up-text" : "text-market-down-text")
             }
           >
             {pcDelta(unrealized)} unrealized
@@ -58,7 +58,7 @@ export function PortfolioSummary() {
               <Line
                 type="monotone"
                 dataKey="total"
-                stroke={pnlPositive ? "var(--primary)" : "var(--destructive)"}
+                stroke={pnlPositive ? "var(--market-up)" : "var(--market-down)"}
                 strokeWidth={2}
                 dot={false}
                 isAnimationActive={false}

@@ -115,8 +115,8 @@ function TradeRow({ trade }: { trade: Trade }) {
         className={
           "flex h-9 w-9 flex-none items-center justify-center rounded-full " +
           (isBuy
-            ? "bg-primary/10 text-primary"
-            : "bg-destructive/10 text-destructive")
+            ? "bg-market-up/10 text-market-up-text"
+            : "bg-market-down/10 text-market-down-text")
         }
       >
         <Icon className="h-4 w-4" strokeWidth={2.2} />
@@ -142,7 +142,7 @@ function TradeRow({ trade }: { trade: Trade }) {
         <p
           className={
             "text-sm font-semibold tabular " +
-            (isBuy ? "text-foreground" : "text-primary")
+            (isBuy ? "text-foreground" : "text-market-up-text")
           }
         >
           {isBuy ? "−" : "+"}

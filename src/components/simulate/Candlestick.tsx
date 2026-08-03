@@ -29,7 +29,7 @@ export function Candlestick({
     >
       {candles.map((c, i) => {
         const up = c.close >= c.open;
-        const color = up ? "var(--primary)" : "var(--destructive)";
+        const color = up ? "var(--market-up)" : "var(--market-down)";
         const cx = i * slotWidth + slotWidth / 2;
         const bodyTop = y(Math.max(c.open, c.close));
         const bodyBottom = y(Math.min(c.open, c.close));

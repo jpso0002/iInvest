@@ -174,7 +174,7 @@ function LessonPlayer() {
           <X className="h-5 w-5" strokeWidth={2} />
         </button>
         <div
-          className="h-2 flex-1 overflow-hidden rounded-full bg-muted"
+          className="h-2 flex-1 overflow-hidden rounded-full bg-progress-track"
           role="progressbar"
           aria-valuenow={Math.round(progressPct)}
           aria-valuemin={0}

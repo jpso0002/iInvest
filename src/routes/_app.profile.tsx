@@ -103,7 +103,7 @@ function ProfilePage() {
           <div className="flex items-center gap-2 text-4xl font-bold tabular-nums text-foreground">
             <StatIcon
               icon={Flame}
-              tone="accent"
+              tone="streak"
               className="h-9 w-9"
               iconClassName="h-5 w-5"
             />

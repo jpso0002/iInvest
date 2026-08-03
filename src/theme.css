@@ -1,41 +1,101 @@
+/* ============================================================================
+ * iInvest design tokens — TIER 1: PRIMITIVES
+ *
+ * Raw brand values. These are the only place a literal colour is allowed to be
+ * written. Nothing in the app should reference a `--brand-*` / `--neutral-*`
+ * token directly — components use the *semantic* tokens defined in styles.css,
+ * which map onto these. Two tiers so a rebrand is a change to this file alone.
+ *
+ * Dark mode overrides the primitives at the bottom, so every semantic token
+ * and every component adapts without any of them knowing about the theme.
+ * ==========================================================================*/
+
 :root {
-  /* Indigo — marque, actions principales */
-  --color-indigo: #5B4FE8;
-  --color-indigo-dark: #3E33B8;
-  --color-indigo-light: #E8E6FB;
-  --color-indigo-tint: #EEEDFE;
+  /* ---- Brand: purple ---- */
+  --brand-purple: #5a4fe6;
+  --brand-purple-dark: #4638d8;
+  --brand-purple-light: #7b70f3;
+  --brand-purple-tint: #f2f0ff;
 
-  /* Corail — accent, gamification, badges */
-  --color-coral: #FF7A3D;
-  --color-coral-light: #FFE4D2;
-  --color-coral-text: #993C1D;
+  /* ---- Neutrals ---- */
+  --neutral-bg: #fafafd;
+  --neutral-surface: #ffffff;
+  --neutral-surface-2: #f5f5fa;
+  --neutral-border: #e8e8f2;
+  --neutral-disabled: #cfcfdc;
+  /* 3D bottom edge for disabled/locked chunky elements. */
+  --neutral-disabled-deep: #b4b4c6;
 
-  /* Teal — gains, succès */
-  --color-teal: #0F6E56;
-  --color-teal-light: #E1F5EE;
-  --color-teal-light-alt: #D7F5F0;
+  /* ---- Text ---- */
+  --text-primary: #1f2333;
+  --text-secondary: #676c80;
+  --text-placeholder: #9ea4b8;
+  --text-on-color: #ffffff;
 
-  /* Rose — pertes, alertes */
-  --color-rose: #A32D2D;
-  --color-rose-light: #FCE2E2;
+  /* ---- Status ----
+   * Each status has three roles:
+   *   base   — fills, bars, chart strokes, icons on solid/dark backgrounds
+   *   light  — tinted surface behind the base
+   *   text   — the base hue darkened until it passes WCAG AA (4.5:1) as body
+   *            text on `light` and on white. The vivid base colours measure
+   *            only 1.9–3.0:1 as text, so using them for words would fail.
+   *   deep   — the "3D" bottom edge on chunky Duolingo-style nodes/buttons
+   */
+  --status-success: #27c084;
+  --status-success-light: #eaf9f2;
+  --status-success-text: #106b4a; /* 6.00:1 on success-light */
+  --status-success-deep: #1c9666;
 
-  /* Neutres */
-  --color-text: #1A1B25;
-  --color-text-secondary: #6B6C7E;
-  --color-text-disabled: #B4B2A9;
-  --color-gray-bg: #F4F4F8;
-  --color-gray-bg-alt: #EDEDF0;
-  --color-white: #FFFFFF;
-  --color-border: #E4E1F5;
-  --color-cream: #FDFBF9;
+  --status-error: #ef5a67;
+  --status-error-light: #fdeeef;
+  --status-error-text: #b3212d; /* 5.88:1 on error-light */
 
-  /* Radius */
+  --status-warning: #f7a441;
+  --status-warning-light: #fff3e5;
+  --status-warning-text: #8a5200; /* 5.84:1 on warning-light */
+
+  --status-info: #4f8ef7;
+  --status-info-light: #eaf3ff;
+  --status-info-text: #1a5fd0; /* 5.22:1 on info-light */
+
+  /* ---- Rewards / coins ---- */
+  --reward-gold: #ffc94d;
+  --reward-gold-dark: #f0b833;
+  --reward-gold-light: #fff6da;
+
+  /* ---- Leagues ---- */
+  --league-bronze: #c98b5b;
+  --league-silver: #c7cdd8;
+  --league-gold: #f4c542;
+  --league-platinum: #6fd3ff;
+  --league-diamond: #5a7dff;
+  --league-master: #7e57ff;
+
+  /* ---- Market performance ----
+     Deliberately aliased to the status colours: "up" and "success" must never
+     drift apart, or a green gain and a green tick stop meaning the same thing.
+     `-text` is what percentages and money actually render in, for the contrast
+     reason above; the vivid base stays for chart lines, candles and bars. */
+  --market-up: var(--status-success);
+  --market-up-text: var(--status-success-text);
+  --market-down: var(--status-error);
+  --market-down-text: var(--status-error-text);
+  --market-neutral: #9095a8;
+
+  /* ---- Progress ---- */
+  --progress-track: #ececfa;
+
+  /* ---- Elevation ---- */
+  --shadow-soft:
+    0 1px 2px rgba(31, 35, 51, 0.05), 0 2px 8px rgba(31, 35, 51, 0.04);
+
+  /* ---- Shape (unchanged — layout must not move) ---- */
   --radius-sm: 14px;
   --radius-md: 18px;
   --radius-lg: 24px;
   --radius-pill: 999px;
 
-  /* Spacing */
+  /* ---- Spacing (unchanged) ---- */
   --space-xs: 4px;
   --space-sm: 8px;
   --space-md: 12px;
@@ -43,8 +103,10 @@
   --space-xl: 24px;
   --space-2xl: 32px;
 
-  /* Typography */
-  --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+  /* ---- Typography (unchanged) ---- */
+  --font-family:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto,
+    sans-serif;
   --font-size-xs: 11px;
   --font-size-sm: 12px;
   --font-size-base: 13px;
@@ -53,56 +115,99 @@
   --font-size-money: 22px;
   --font-size-money-lg: 26px;
 
-  --shadow-soft: 0 1px 2px rgba(26, 27, 37, 0.06), 0 2px 8px rgba(26, 27, 37, 0.04);
-
+  /* ---- Device frame (unchanged) ---- */
   --phone-width: 390px;
   --tabbar-height: 64px;
   --statusbar-height: 44px;
+
+  /* ------------------------------------------------------------------------
+   * Legacy aliases.
+   *
+   * The four hand-written stylesheets (TabBar, Mascot, Splash, PhoneFrame) and
+   * a couple of .jsx components still reference the old `--color-*` names.
+   * Rather than leave two competing palettes alive, those names now resolve to
+   * the new tokens — so the old selectors keep working and automatically pick
+   * up the new brand. Prefer the semantic tokens in new code.
+   * --------------------------------------------------------------------- */
+  --color-indigo: var(--brand-purple);
+  --color-indigo-dark: var(--brand-purple-dark);
+  --color-indigo-light: var(--brand-purple-tint);
+  --color-indigo-tint: var(--brand-purple-tint);
+  --color-text: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-secondary);
+  --color-text-disabled: var(--text-placeholder);
+  --color-white: var(--neutral-surface);
+  --color-border: var(--neutral-border);
+  --color-cream: var(--neutral-surface);
+  --color-gray-bg: var(--neutral-surface-2);
+  --color-gray-bg-alt: var(--neutral-bg);
 }
 
-/* Dark mode — toggled by adding the `.dark` class on <html>. Only the colour
-   tokens are remapped; every screen that uses these variables adapts. Accent
-   hues are brightened a touch so they stay legible on dark surfaces, and the
-   light "tint" backgrounds become dark tinted surfaces. */
+/* ============================================================================
+ * Dark mode — toggled by `.dark` on <html> (Profile → Appearance).
+ *
+ * Only primitives are remapped. Brand purple is lightened so it stays legible
+ * on dark surfaces, and the pale "-light"/"tint" status backgrounds become
+ * dark tinted surfaces rather than glowing white patches.
+ * ==========================================================================*/
 .dark {
-  --color-indigo: #7C70F2;
-  --color-indigo-dark: #6155E9;
-  --color-indigo-light: #2E2A54;
-  --color-indigo-tint: #24213F;
+  --brand-purple: #8b81f5;
+  --brand-purple-dark: #6f63ee;
+  --brand-purple-light: #a79ff8;
+  --brand-purple-tint: #26224a;
 
-  --color-coral: #FF8A52;
-  --color-coral-light: #3A2417;
-  --color-coral-text: #FFB489;
+  --neutral-bg: #101018;
+  --neutral-surface: #1a1a26;
+  --neutral-surface-2: #22222f;
+  --neutral-border: #303044;
+  --neutral-disabled: #4a4a5e;
 
-  --color-teal: #33BE9E;
-  --color-teal-light: #123029;
-  --color-teal-light-alt: #143329;
+  --text-primary: #eceef6;
+  --text-secondary: #a2a7ba;
+  --text-placeholder: #767c92;
 
-  --color-rose: #EA6A6A;
-  --color-rose-light: #3A1D1D;
+  --status-success: #3ed69a;
+  --status-success-light: #12352a;
+  /* Inverted on dark: the pale hue is now the readable text colour against
+     the dark tinted surface, so `-text` brightens rather than darkens. */
+  --status-success-text: #6ee7b4;
+  --status-success-deep: #1c8a5f;
 
-  --color-text: #ECEDF4;
-  --color-text-secondary: #A2A4B4;
-  --color-text-disabled: #6C6E7C;
-  --color-gray-bg: #262731;
-  --color-gray-bg-alt: #14151C;
-  --color-white: #22232E;
-  --color-border: #34353F;
-  --color-cream: #16171F;
+  --status-error: #ff7b86;
+  --status-error-light: #3b1d21;
+  --status-error-text: #ffa8b0;
 
-  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.25);
+  --status-warning: #ffb861;
+  --status-warning-light: #3a2a15;
+  --status-warning-text: #ffd199;
+
+  --status-info: #6ea6ff;
+  --status-info-light: #16264a;
+  --status-info-text: #a3c6ff;
+
+  --reward-gold: #ffd36b;
+  --reward-gold-dark: #e0a92c;
+  --reward-gold-light: #3a2f14;
+
+  --market-neutral: #8288a0;
+  --neutral-disabled-deep: #3a3a4e;
+  --progress-track: #2c2c40;
+
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 * {
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
-  background: var(--color-gray-bg-alt);
+  background: var(--neutral-bg);
   font-family: var(--font-family);
-  color: var(--color-text);
+  color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
 }
 
@@ -124,7 +229,7 @@ select:focus-visible,
 textarea:focus-visible,
 [role="button"]:focus-visible,
 [tabindex]:focus-visible {
-  outline: 3px solid var(--color-indigo);
+  outline: 3px solid var(--brand-purple);
   outline-offset: 2px;
   border-radius: 6px;
 }

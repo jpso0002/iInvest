@@ -12,12 +12,18 @@ export const daysUntilWeekReset = (): number => {
   return Math.max(1, Math.ceil((MS_PER_WEEK - intoWeek) / MS_PER_DAY));
 };
 
+/** `token` is a design-system colour variable, so the trophy and tier badge
+ *  take the league's own metal rather than a generic brand purple. */
 export const LEAGUES = [
-  { name: "Bronze League", minXp: 0 },
-  { name: "Silver League", minXp: 100 },
-  { name: "Gold League", minXp: 250 },
-  { name: "Platinum League", minXp: 500 },
+  { name: "Bronze League", minXp: 0, token: "--league-bronze" },
+  { name: "Silver League", minXp: 100, token: "--league-silver" },
+  { name: "Gold League", minXp: 250, token: "--league-gold" },
+  { name: "Platinum League", minXp: 500, token: "--league-platinum" },
 ] as const;
+
+/** The CSS variable for a league name, for inline `color`/`background`. */
+export const leagueToken = (name: string): string =>
+  LEAGUES.find((l) => l.name === name)?.token ?? "--league-bronze";
 
 export const computeLeague = (weeklyXp: number): string => {
   let current: string = LEAGUES[0].name;
